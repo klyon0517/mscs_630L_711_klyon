@@ -12,8 +12,7 @@
 
 
 
-// import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Scanner;
 
 
@@ -21,88 +20,66 @@ import java.util.Scanner;
 /**
  * Driver_lab1
  * 
- * This class uses a hashmap to convert a
- * plain text string to an array of integers.
+ * This class converts a plain text string 
+ * to an array of integers.
  */
 public class Driver_lab1 {
+  
+  /**
+   * str2int
+   *
+   * This function takes a string and converts each character
+   * into a number from 0 - 25 and sets
+   * whitespace to the number 26.
+   * 
+   * Parameters:
+   *   plainText: the string from the next line of the input file
+   * 
+   * Return value: an array of numbers.
+   */
+  public static int[] str2int(String plainText) {
     
-  /* public static int[] str2int(String plainText) {
+    char letter;
+    int num;
+    int len = plainText.length();
+    int[] numArray = new int[len];
     
-    for (int i = 0; i < plainText.length(); i++) {
+    for (int i = 0; i < len; i++) {
           
       letter = plainText.charAt(i);
-      num = char2int.get(Character.toLowerCase(letter));
+      
+      if (Character.isWhitespace(letter)) {
+        
+        num = 26;
+        
+      } else {
+        
+        letter = Character.toLowerCase(letter);
+        num = letter - 97;
+                
+      }
+      
+      numArray[i] = num;
       
     }
     
     return numArray;
     
-  } */
+  }
   
   public static void main(String[] args) {
     
     Scanner input = new Scanner(System.in);
-    String plainText;
-    char letter;
-    int num;
-    
-    // ArrayList<Integer> cypherText = new ArrayList<Integer>();
-    
-    HashMap<Character, Integer> char2int = new HashMap<Character, Integer>();
-    
-    char2int.put('a', 0);
-    char2int.put('b', 1);
-    char2int.put('c', 2);
-    char2int.put('d', 3);
-    char2int.put('e', 4);
-    char2int.put('f', 5);
-    char2int.put('g', 6);
-    char2int.put('h', 7);
-    char2int.put('i', 8);
-    char2int.put('j', 9);
-    char2int.put('k', 10);
-    char2int.put('l', 11);
-    char2int.put('m', 12);
-    char2int.put('n', 13);
-    char2int.put('o', 14);
-    char2int.put('p', 15);
-    char2int.put('q', 16);
-    char2int.put('r', 17);
-    char2int.put('s', 18);
-    char2int.put('t', 19);
-    char2int.put('u', 20);
-    char2int.put('v', 21);
-    char2int.put('w', 22);
-    char2int.put('x', 23);
-    char2int.put('y', 24);
-    char2int.put('z', 25);
+    String line;
+    int [] cypherArray;
     
     while (input.hasNext()) {
       
-      plainText = input.nextLine();
+      line = input.nextLine();
       
-      // str2int(line);
+      cypherArray = str2int(line);
             
-      for (int i = 0; i < plainText.length(); i++) {
-        
-        letter = plainText.charAt(i);
-        
-        if (Character.isWhitespace(letter)) {
-          
-          System.out.print(26 + " ");
-          
-        } else {
-          
-          num = char2int.get(Character.toLowerCase(letter));
-          System.out.print(num + " ");
-          // cypherText.add(num);
-          // System.out.println(num);
-          
-        }
-        
-      }
-            
-      System.out.println();
+      System.out.println(Arrays.toString(cypherArray).replaceAll("[\\[|\\]|\\,]", ""));
       
     }    
 

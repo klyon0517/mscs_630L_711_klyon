@@ -69,21 +69,30 @@ public class Driver_lab1 {
   
   public static void main(String[] args) {
     
-    Scanner input = new Scanner(System.in);
-    String line;
-    int [] cypherArray;    
-    
-    while (input.hasNext()) {
-            
-      line = input.nextLine();
+    try {
       
-      cypherArray = str2int(line);
+      Scanner input = new Scanner(System.in);
+      String line;
+      int [] cypherArray;    
       
-      System.out.println(Arrays.toString(cypherArray).replaceAll("[\\[|\\]|\\,]", ""));
+      while (input.hasNext()) {
+              
+        line = input.nextLine();
+        
+        cypherArray = str2int(line);
+        
+        System.out.println(Arrays.toString(cypherArray).replaceAll("[\\[|\\]|\\,]", ""));
+        
+      }
+      
+      // last line is empty - how do you prevent the carriage return or get rid of it
+      
+    } catch (Exception e) {
+      
+      System.out.println("Error. Failed the unit test.");
+      e.printStackTrace();
       
     }
-    
-    // last line is empty - how do you prevent the carriage return or get rid of it
 
   }
 

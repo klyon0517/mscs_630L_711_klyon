@@ -35,7 +35,7 @@ public class Driver_lab1 {
    * Parameters:
    *   plainText: the string from the next line of the input file
    * 
-   * Return value: an array of numbers.
+   * Return value: an array of integers.
    */
   public static int[] str2int(String plainText) {
     
@@ -84,8 +84,6 @@ public class Driver_lab1 {
         System.out.println(Arrays.toString(cypherArray).replaceAll("[\\[|\\]|\\,]", ""));
         
       }
-      
-      // last line is empty - how do you prevent the carriage return or get rid of it
       
     } catch (Exception e) {
       

@@ -13,8 +13,7 @@
 
 
 
-import java.util.*;
-import java.lang.*;
+import java.util.Scanner;
 
 
 
@@ -44,9 +43,11 @@ public class Driver_lab2a {
       
       return b;
       
-    }
+    } else {
       
-    return euclidAlg(b%a, a);
+      return euclidAlg(b%a, a);
+      
+    }
 
   }
 

@@ -1,13 +1,13 @@
 /**
- * File: Driver_lab4.java
+ * File: Driver_lab5.java
  * Author: Kerry Lyon
  * Course: MSCS 630L 711
- * Assignment: Lab 4
- * Due Date: February 20, 2022
+ * Assignment: Lab 5
+ * Due Date: March 6, 2022
  * Version: 1.0
  *
- * This lab deals with AES and how it produces keys.
- * In particular, generating 11 rounds of keys.
+ * This lab deals builds on lab 4 and introduces
+ * AES encryption.
  */
 
 
@@ -18,18 +18,18 @@ import java.io.InputStreamReader;
 
 
 /**
- * Driver_lab4
+ * Driver_lab5
  *
  * This class will test the AESCipher class and methods by
- * calling aesRoundKeys() and providing valid input.
+ * calling AES() and providing valid input (system key and plaintext block).
  */
- public class Driver_lab4 {
+ public class Driver_lab5 {
   
   /**
    * main
    *
-   * This method streams in the system key, calls the aesRoundKeys() method,
-   * and outputs the 11 round keys, one in each row, all in upper case.
+   * This method streams in the system key and plaintext block,
+   * calls the AES() method, and outputs the ciphertext, all in upper case.
    *
    * Parameters:
    *  args: the array of command line argument values
@@ -43,7 +43,7 @@ import java.io.InputStreamReader;
       InputStreamReader isr = new InputStreamReader(System.in);
       BufferedReader br = new BufferedReader(isr);
       String input = br.readLine();
-      String[] result = AESCipher.aesRoundKeys(input);
+      String[] result = AESCipher.AES(input);
       
       for (String str : result) {
         

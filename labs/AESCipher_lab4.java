@@ -2,12 +2,12 @@
  * File: AESCipher.java
  * Author: Kerry Lyon
  * Course: MSCS 630L 711
- * Assignment: Lab 5
- * Due Date: March 6, 2022
+ * Assignment: Lab 4
+ * Due Date: February 20, 2022
  * Version: 1.0
  *
- * This lab deals builds on lab 4 and introduces
- * AES encryption.
+ * This lab deals with AES and how it produces keys.
+ * In particular, generating 11 rounds of keys.
  */
 
 
@@ -15,8 +15,8 @@
 /**
  * AESCipher
  *
- * This class contains the methods for producing the 11 round keys
- * and encryption.
+ * This class contains the methods for producing the 11 round keys.
+ * It accepts a length 16-hex string representation of the system key.
  */
 public class AESCipher {
   

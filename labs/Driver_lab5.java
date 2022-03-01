@@ -39,18 +39,13 @@ import java.io.InputStreamReader;
   public static void main(String[] args) {
         
     try {
-      
+            
       InputStreamReader isr = new InputStreamReader(System.in);
       BufferedReader br = new BufferedReader(isr);
-      String input = br.readLine();
-      String[] result = AESCipher.AES(input);
-      
-      for (String str : result) {
-        
-        System.out.println(str);
-          
-      }
-          
+      String key = br.readLine();
+      String text = br.readLine();
+      System.out.println(AESCipher.AES(text, key));
+                
     } catch (Exception e) {
       
       System.out.println("Error. Failed the unit test.");

@@ -15,8 +15,7 @@
 /**
  * AESCipher
  *
- * This class contains the methods for producing the 11 round keys
- * and encryption.
+ * This class contains the methods for producing a ciphertext.
  */
 public class AESCipher {
   
@@ -38,6 +37,8 @@ public class AESCipher {
     {"70", "3E", "B5", "66", "48", "03", "F6", "0E", "61", "35", "57", "B9", "86", "C1", "1D", "9E"},
     {"E1", "F8", "98", "11", "69", "D9", "8E", "94", "9B", "1E", "87", "E9", "CE", "55", "28", "DF"},
     {"8C", "A1", "89", "0D", "BF", "E6", "42", "68", "41", "99", "2D", "0F", "B0", "54", "BB", "16"}};
+  
+
   
   /**
    * aesRoundKeys
@@ -63,18 +64,8 @@ public class AESCipher {
       throw new IllegalArgumentException("Input must be 32 hex characters (128-bits).");
       
     }
-    
-    String[][] Ke = new String[4][4];
-    
-    for (int i = 0; i < 4; i++) {
-      
-      for (int j = 0; j < 4; j++) {
         
-        Ke[i][j] = KeyHex.substring((i*4 + j) * 2, (i*4 + j + 1) * 2);
-          
-      }
-        
-    }
+    String[][] Ke = toMatrix(KeyHex);
 
     String[][] W = new String[44][4];
 
@@ -183,17 +174,293 @@ public class AESCipher {
    * This method performs the XOR operation.
    *
    * Parameters:
-   *  String hex1: location value
-   *  String hex2: location value
+   *  String hex: location value
    *
    * Return value: hex value
    */
-  private static String XorHex(String hex1, String hex2) {
+  private static String XorHex(String ... hex) {
     
-    return String.format("%02X",
-    Integer.parseInt(hex1, 16)
-    ^ Integer.parseInt(hex2, 16));
+    int ret = Integer.parseInt(hex[0], 16);
     
+    for (int i = 1; i < hex.length; i++) {
+      
+        ret = ret ^ Integer.parseInt(hex[i], 16);
+        
+    }
+    
+    return String.format("%02X", ret & 0xFF);
+        
+  }
+  
+  
+  
+  /**
+   * AESStateXOR
+   *
+   * This method performs the "Add Round Key" operation. 
+   *
+   * Parameters:
+   *  String[][] sHex: four by four matrix of pairs of hex digits
+   *  String[][] keyHex: four by four matrix
+   *
+   * Return value: XOR of the corresponding input matrix entries
+   *  (four by four matrix of pairs of hex digits)
+   */
+  public static String[][] AESStateXOR(String[][] sHex, String[][] keyHex) {
+    
+    String[][] outHex = new String[4][4];
+    
+    for (int i = 0; i < 4; i++) {
+      
+      for (int j = 0; j < 4; j++) {
+        
+        outHex[i][j] = XorHex(sHex[i][j], keyHex[i][j]);
+          
+      }
+        
+    }
+    
+    return outHex;
+      
+  }
+  
+  
+  
+  /**
+   * AESNibbleSub
+   *
+   * This method performs the "Substitution" operation by running the input matrix
+   * entries through the AES SBox.
+   *
+   * Parameters:
+   *  String[][] inHex: four by four matrix of pairs of hex digits
+   *
+   * Return value: four by four matrix of pairs of hex digits
+   */
+  public static String[][] AESNibbleSub(String[][] inHex) {
+    
+    String[][] outHex = new String[4][4];
+    
+    for (int i = 0; i < 4; i++) {
+      
+      for (int j = 0; j < 4; j++) {
+        
+        outHex[i][j] = aesSBox(inHex[i][j]);
+          
+      }
+        
+    }
+    
+    return outHex;
+      
+  }
+  
+  
+  
+  /**
+   * AESShiftRow
+   *
+   * This method performs the "Shift Row" operation
+   *
+   * Parameters:
+   *  String [][] inStateHex: four by four matrix of pairs of hex digits
+   *
+   * Return value: shifted four by four matrix of pairs of hex digits
+   */
+  public static String[][] AESShiftRow(String[][] inStateHex) {
+    
+    String[][] outHex = new String[4][4];
+    
+    for (int i = 0; i < 4; i++) {
+      
+      for (int j = 0; j < 4; j++) {
+        
+        outHex[i][j] = inStateHex[(i + j) % 4][j];
+          
+      }
+        
+    }
+    
+    return outHex;
+      
+  }
+  
+  
+  
+  /**
+   * GMul
+   *
+   * This method performs the Galois Field multiplication
+   * for the AESMixColumn function.
+   *
+   * Parameters:
+   *  String a: string
+   *  String b: string
+   *
+   * Return value: string
+   */
+  private static String GMul(String a, String b) {
+    
+    int p = 0;
+    int ai = Integer.parseInt(a, 16);
+    int bi = Integer.parseInt(b, 16);
+
+    for (int i = 0; i < 8; i++) {
+      
+      if ((bi & 0x01) == 1) {
+        
+        p = (p ^ ai) & 0xFF;
+          
+      }
+
+      boolean hi_bit_set = ((ai & 0x80) == 0x80);
+      
+      ai <<= 1;
+      
+      if (hi_bit_set) {
+        
+        ai = (ai ^ 0x1B) & 0xFF;
+          
+      }
+      
+      bi = (bi >> 1) & 0x7F;
+        
+    }
+
+    return String.format("%02X", p);
+      
+  }
+  
+  
+  
+  /**
+   * toMatrix
+   *
+   * This method converts a string to a four by four matrix.
+   *
+   * Parameters:
+   *  String value: string
+   *
+   * Return value: four by four matrix
+   */
+  private static String[][] toMatrix(String value) {
+    
+    String[][] ret = new String[4][4];
+    
+    for (int i = 0; i < 4; i++) {
+      
+      for (int j = 0; j < 4; j++) {
+        
+        ret[i][j] = value.substring((i*4 + j) * 2, (i*4 + j + 1) * 2);
+          
+      }
+        
+    }
+    
+    return ret;
+      
+  }
+  
+  
+  
+  /**
+   * fromMatrix
+   *
+   * This method converts a four by four matrix to a string.
+   *
+   * Parameters:
+   *  String[][] value: four by four matrix
+   *
+   * Return value: string
+   */
+  private static String fromMatrix(String[][] value) {
+    
+    String out = "";
+    
+    for (int i = 0; i < 4; i++) {
+      
+      for (int j = 0; j < 4; j++) {
+        
+        out += value[i][j];
+          
+      }
+        
+    }
+    
+    return out;
+      
+  }
+  
+  
+  
+  /**
+   * AESMixColumn
+   *
+   * This method performs the "Mix Column" operation.
+   *
+   * Parameters:
+   *  String[][] inStateHex: four by four matrix of pairs of hex digits
+   *
+   * Return value: four by four matrix of pairs of hex digits
+   */
+  public static String[][] AESMixColumn(String[][] inStateHex) {
+    
+    String[][] out = new String[4][4];
+    
+    for (int i = 0; i < 4; i++) {
+      
+      out[i][0] = XorHex(GMul("02", inStateHex[i][0]), GMul("03", inStateHex[i][1]), inStateHex[i][2], inStateHex[i][3]);
+      out[i][1] = XorHex(inStateHex[i][0], GMul("02", inStateHex[i][1]), GMul("03", inStateHex[i][2]), inStateHex[i][3]);
+      out[i][2] = XorHex(inStateHex[i][0], inStateHex[i][1], GMul("02", inStateHex[i][2]), GMul("03", inStateHex[i][3]));
+      out[i][3] = XorHex(GMul("03", inStateHex[i][0]), inStateHex[i][1], inStateHex[i][2], GMul("02", inStateHex[i][3]));
+        
+    }
+
+    return out;
+      
+  }
+  
+  
+  
+  /**
+   * AES
+   *
+   * This method performs AES encryption.
+   *
+   * Parameters:
+   *  String pTextHex: plaintext block
+   *  String keyHex: system key
+   *
+   * Return value: ciphertext (all in upper case)
+   */
+  public static String[] AES(String pTextHex, String keyHex) {
+    
+    String[] keyExp = aesRoundKeys(keyHex);
+
+    String[][] state = toMatrix(pTextHex);
+    state = AESStateXOR(state, toMatrix(keyExp[0]));
+
+    for (int i = 1; i < 10; i++) {
+      
+      state = AESNibbleSub(state);
+      state = AESShiftRow(state);
+      state = AESMixColumn(state);
+      state = AESStateXOR(state, toMatrix(keyExp[i]));
+        
+    }
+
+    state = AESNibbleSub(state);
+    state = AESShiftRow(state);
+    state = AESStateXOR(state, toMatrix(keyExp[keyExp.length - 1]));
+
+    // Needs an array returned for the unit tests
+    // return fromMatrix(state);
+    
+    String s = fromMatrix(state);
+    String[] strArray = {s};
+
+    return strArray;
+      
   }
   
 }

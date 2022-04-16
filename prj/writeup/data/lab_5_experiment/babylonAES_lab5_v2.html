@@ -1,0 +1,1147 @@
+<!--  BabylonAES
+
+      * Software: MSCS 630L Semester Project
+      * Filename: babylonAES_lab5_v1.php
+      * Author: Kerry Lyon
+      * Created: March 21, 2022
+
+      * Initial conversion of lab 5.
+
+-->
+
+
+
+<!DOCTYPE html>
+<html  xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+  
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="BabylonAES" />
+    <meta name="keywords" content="aes, encryption, animation, babylonjs, marist, college, cryptography, algorithms" />
+    <meta name="author" content="Kerry Lyon" />
+		
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+		<title>BabylonAES</title>
+		
+    <style>
+    
+      html, body {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #renderCanvas {
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+      }
+      
+    </style>
+        
+    <!-- Babylyon.js -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+        
+  </head>
+  <body>
+    
+    <canvas id="renderCanvas"></canvas>
+       
+    <script>
+    
+      const canvas = document.getElementById("renderCanvas");
+      const engine = new BABYLON.Engine(canvas, true);
+
+      const createScene =  () => {
+        
+        // initial setup
+        const scene = new BABYLON.Scene(engine);
+        // Background color
+        scene.clearColor = new BABYLON.Color3.FromHexString('#b3e6ff');
+        
+        // Camera
+        const camera = new BABYLON.ArcRotateCamera("camera", 0, Math.PI / 2, 5, new BABYLON.Vector3(0, -5, 0), scene);
+        camera.attachControl(canvas, true);
+        
+        // Light
+        const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+        light.groundColor = new BABYLON.Color3(1, 1, 1);
+        
+        // Ground plane
+        // const ground = BABYLON.MeshBuilder.CreateGround("ground", {height: 512, width: 512, subdivisions: 64}, scene);
+        // ground.position.y = -58
+        
+        // var groundMat = new BABYLON.StandardMaterial("groundMat", scene);
+        // groundMat.diffuseColor = new BABYLON.Color3(0, 0, 0);
+        // groundMat.specularColor = new BABYLON.Color3(0, 0, 0);
+        // ground.material = groundMat;
+        
+        
+        
+        
+        // ------------------------ plaintext ------------------------- //
+        
+        // Sample Input 1
+        const key = "5468617473206D79204B756E67204675";
+        const plaintext = "54776F204F6E65204E696E652054776F";
+        // ciphertext = 29C3505F571420F6402299B31A02D73A;
+        
+        // Sample Input 2
+        // const key = "44722E205061626C6F2052697661732E";
+        // const plaintext = "61697368776172796120706167616C61";
+        // ciphertext = 94E4929435E2D32FBC2B6D58A24AA416
+        
+        console.log("key: " + key);
+        console.log("plaintext: " + plaintext);
+                
+        const RCon = ["8D", "01", "02", "04", "08", "10", "20", "40", "80", "1B", "36"];
+        const SBox = [
+          ["63", "7C", "77", "7B", "F2", "6B", "6F", "C5", "30", "01", "67", "2B", "FE", "D7", "AB", "76"],
+          ["CA", "82", "C9", "7D", "FA", "59", "47", "F0", "AD", "D4", "A2", "AF", "9C", "A4", "72", "C0"],
+          ["B7", "FD", "93", "26", "36", "3F", "F7", "CC", "34", "A5", "E5", "F1", "71", "D8", "31", "15"],
+          ["04", "C7", "23", "C3", "18", "96", "05", "9A", "07", "12", "80", "E2", "EB", "27", "B2", "75"],
+          ["09", "83", "2C", "1A", "1B", "6E", "5A", "A0", "52", "3B", "D6", "B3", "29", "E3", "2F", "84"],
+          ["53", "D1", "00", "ED", "20", "FC", "B1", "5B", "6A", "CB", "BE", "39", "4A", "4C", "58", "CF"],
+          ["D0", "EF", "AA", "FB", "43", "4D", "33", "85", "45", "F9", "02", "7F", "50", "3C", "9F", "A8"],
+          ["51", "A3", "40", "8F", "92", "9D", "38", "F5", "BC", "B6", "DA", "21", "10", "FF", "F3", "D2"],
+          ["CD", "0C", "13", "EC", "5F", "97", "44", "17", "C4", "A7", "7E", "3D", "64", "5D", "19", "73"],
+          ["60", "81", "4F", "DC", "22", "2A", "90", "88", "46", "EE", "B8", "14", "DE", "5E", "0B", "DB"],
+          ["E0", "32", "3A", "0A", "49", "06", "24", "5C", "C2", "D3", "AC", "62", "91", "95", "E4", "79"],
+          ["E7", "C8", "37", "6D", "8D", "D5", "4E", "A9", "6C", "56", "F4", "EA", "65", "7A", "AE", "08"],
+          ["BA", "78", "25", "2E", "1C", "A6", "B4", "C6", "E8", "DD", "74", "1F", "4B", "BD", "8B", "8A"],
+          ["70", "3E", "B5", "66", "48", "03", "F6", "0E", "61", "35", "57", "B9", "86", "C1", "1D", "9E"],
+          ["E1", "F8", "98", "11", "69", "D9", "8E", "94", "9B", "1E", "87", "E9", "CE", "55", "28", "DF"],
+          ["8C", "A1", "89", "0D", "BF", "E6", "42", "68", "41", "99", "2D", "0F", "B0", "54", "BB", "16"]
+        ];
+        
+        
+        const SBoxBackground = [
+          ["63", "7C", "77", "7B", "F2", "6B", "6F", "C5", "30", "01", "67", "2B", "FE", "D7", "AB", "76"],
+          ["CA", "82", "C9", "7D", "FA", "59", "47", "F0", "AD", "D4", "A2", "AF", "9C", "A4", "72", "C0"],
+          ["B7", "FD", "93", "26", "36", "3F", "F7", "CC", "34", "A5", "E5", "F1", "71", "D8", "31", "15"],
+          ["04", "C7", "23", "C3", "18", "96", "05", "9A", "07", "12", "80", "E2", "EB", "27", "B2", "75"],
+          ["09", "83", "2C", "1A", "1B", "6E", "5A", "A0", "52", "3B", "D6", "B3", "29", "E3", "2F", "84"],
+          ["53", "D1", "00", "ED", "20", "FC", "B1", "5B", "6A", "CB", "BE", "39", "4A", "4C", "58", "CF"],
+          ["D0", "EF", "AA", "FB", "43", "4D", "33", "85", "45", "F9", "02", "7F", "50", "3C", "9F", "A8"],
+          ["51", "A3", "40", "8F", "92", "9D", "38", "F5", "BC", "B6", "DA", "21", "10", "FF", "F3", "D2"],
+          ["CD", "0C", "13", "EC", "5F", "97", "44", "17", "C4", "A7", "7E", "3D", "64", "5D", "19", "73"],
+          ["60", "81", "4F", "DC", "22", "2A", "90", "88", "46", "EE", "B8", "14", "DE", "5E", "0B", "DB"],
+          ["E0", "32", "3A", "0A", "49", "06", "24", "5C", "C2", "D3", "AC", "62", "91", "95", "E4", "79"],
+          ["E7", "C8", "37", "6D", "8D", "D5", "4E", "A9", "6C", "56", "F4", "EA", "65", "7A", "AE", "08"],
+          ["BA", "78", "25", "2E", "1C", "A6", "B4", "C6", "E8", "DD", "74", "1F", "4B", "BD", "8B", "8A"],
+          ["70", "3E", "B5", "66", "48", "03", "F6", "0E", "61", "35", "57", "B9", "86", "C1", "1D", "9E"],
+          ["E1", "F8", "98", "11", "69", "D9", "8E", "94", "9B", "1E", "87", "E9", "CE", "55", "28", "DF"],
+          ["8C", "A1", "89", "0D", "BF", "E6", "42", "68", "41", "99", "2D", "0F", "B0", "54", "BB", "16"]
+        ];
+        
+        var iSBox = 1;
+        var iRCon = 0;
+                
+        console.log("ciphertext: " + AES(plaintext, key));
+        
+        const ciphertext = AES(plaintext, key);
+        
+        // console.log(RCon);
+        // console.log(SBox);
+        
+        // make one function to display string of characters
+        // make one function to display matrix
+        // make a function to display large SBox matrix in background
+        // pass in the string
+        // key and plaintext title with transparent background
+        // rotate / position various sections so the camera is surrounded
+        
+        // Width / Height
+        var DTWidth;
+        var DTHeight;
+                
+        const frameRate = 10;
+        var letter;
+        
+        // Spawn normal plane
+        function normalPlane(str, planeHeight, planeWidth, posx, posy, posz, xFactor, zFactor, fontColor, color, alpha, useAlpha, roty) {
+          
+          var DTWidth = planeWidth * 128;
+          var DTHeight = planeHeight * 128;
+              
+          for (var i = 0; i < str.length; i++) {
+                          
+              // Get letter from the string
+              letter = str.charAt(i);
+              
+              // Dynamic texture setup
+              var planeDynTex = new BABYLON.DynamicTexture("PlaneDynTex", {width:DTWidth, height:DTHeight}, scene);
+              var ctx = planeDynTex.getContext();
+              
+              // Font sized to fit the plane
+              var font_type = "Arial";
+              var size = 12;
+              var text = "8D";
+              ctx.font = size + "px " + font_type;
+              var textWidth = ctx.measureText(text).width;
+              
+              var ratio = textWidth/size;
+              
+              var font_size = Math.floor(DTWidth / (ratio * 1));
+              var font = font_size + "px " + font_type;
+              
+              var plainMat = new BABYLON.StandardMaterial("PlainMat", scene);
+              plainMat.diffuseTexture = planeDynTex;
+              plainMat.diffuseTexture.hasAlpha = alpha;
+              plainMat.useAlphaFromDiffuseTexture = useAlpha;
+              
+              var plane = BABYLON.MeshBuilder.CreatePlane("plane", {height: planeHeight, width: planeWidth, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+              plane.material = plainMat;
+              planeDynTex.drawText(letter, null, null, font, fontColor, color, true);
+              
+              plainMat.onBindObservable.add(() => {
+                
+                engine.alphaState.setAlphaBlendFunctionParameters(1, 0x0303 /* ONE MINUS SRC ALPHA */, 1, 0x0303 /* ONE MINUS SRC ALPHA */);
+                
+              });
+    
+              plane.position = new BABYLON.Vector3((i * xFactor) + posx, posy, (i * zFactor) + posz);
+              plane.rotation.y = roty;
+              
+              if (plane == "ciphertextAnswerPlane") {
+              
+                /* const frameRate = 10;
+              
+                // Animation
+                var visibleTog = new BABYLON.Animation("visibleTog", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                  
+                var visFrames = [];
+                
+                visFrames.push({
+                  frame: 0,
+                  value: 0,
+                });
+                
+                visFrames.push({
+                  frame: 5 * frameRate / 2,
+                  value: 1,
+                });
+
+                visibleTog.setKeys(visFrames);
+                
+                scene.beginDirectAnimation(plane, [visibleTog], 0, 8 * frameRate / 2, false); */
+                
+                console.log(plane);
+                
+              }
+                                                    
+            }
+          
+        }
+        
+        // key
+        // normalPlane("Key", 1, 1, -20, 0, 30, 1.25, 0, "blue", "transparent", "true", "true", 0);
+        // normalPlane(key, 1, 1, -20, -1.25, 30, 1.25, 0, "blue", "white", "false", "false", 0);
+        normalPlane("Key", 1, 1, -30, 0, -20, 0, 1.25, "blue", "transparent", "true", "true", -Math.PI / 2);
+        normalPlane(key, 1, 1, -30, -1.25, -20, 0, 1.25, "blue", "white", "false", "false", -Math.PI / 2);
+        
+        // plaintext        
+        // normalPlane("Plaintext", 1, 1, -20, -3.75, 30, 1.25, 0, "blue", "transparent",  "true", "true", 0);
+        // normalPlane(plaintext, 1, 1, -20, -5, 30, 1.25, 0, "blue", "white", "false", "false", 0);
+        normalPlane("Plaintext", 1, 1, -30, -3.75, -20, 0, 1.25, "blue", "transparent",  "true", "true", -Math.PI / 2);
+        normalPlane(plaintext, 1, 1, -30, -5, -20, 0, 1.25, "blue", "white", "false", "false", -Math.PI / 2);
+        
+        // Spawn array plane
+        function arrayPlane(matrix, planeHeight, planeWidth, posx, posy, posz, xFactor, zFactor, fontColor, color, alpha, useAlpha, roty) {
+          
+          DTWidth = planeWidth * 128;
+          DTHeight = planeHeight * 128;
+          
+          for (var x = 0; x < matrix.length; x++) {
+          
+            // letter = matrix[x][y];
+            letter = matrix[x]
+                    
+            var arrayDynTex = new BABYLON.DynamicTexture("arrayDynTex", {width:DTWidth, height:DTHeight}, scene);
+            var ctx = arrayDynTex.getContext();
+            
+            // Font sized to fit the plane
+            var font_type = "Arial";
+            var size = 12;
+            var text = "8D";
+            ctx.font = size + "px " + font_type;
+            var textWidth = ctx.measureText(text).width;
+            
+            var ratio = textWidth/size;
+            
+            var font_size = Math.floor(DTWidth / (ratio * 1));
+            var font = font_size + "px " + font_type;
+            
+            var arrayMat = new BABYLON.StandardMaterial("arrayMat", scene);                    
+            arrayMat.diffuseTexture = arrayDynTex;
+            arrayMat.diffuseTexture.hasAlpha = alpha;
+            arrayMat.useAlphaFromDiffuseTexture = useAlpha;
+            
+            var arrayPlane = BABYLON.MeshBuilder.CreatePlane("arrayPlane", {height: planeHeight, width: planeWidth, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+            arrayPlane.material = arrayMat;
+            arrayDynTex.drawText(letter, null, null, font, fontColor, color, true);
+            
+            arrayMat.onBindObservable.add(() => {
+              
+              engine.alphaState.setAlphaBlendFunctionParameters(1, 0x0303 /* ONE MINUS SRC ALPHA */, 1, 0x0303 /* ONE MINUS SRC ALPHA */);
+              
+            });
+            
+            arrayPlane.position = new BABYLON.Vector3((x * xFactor) + posx, posy, (x * zFactor) + posz);
+            arrayPlane.rotation.y = roty;
+                      
+          }
+
+        }        
+        
+        // Spawn matrix plane
+        function matrixPlane(matrix, planeHeight, planeWidth, posx, posy, posz, xFactor, yFactor, zFactor, fontColor, color, alpha, useAlpha, roty) {
+          
+          DTWidth = planeWidth * 128;
+          DTHeight = planeHeight * 128;
+          
+          for (var x = 0; x < matrix.length; x++) {
+          
+            for (var y = 0; y < matrix[x].length; y++) {
+              
+              letter = matrix[y][x];
+                      
+              var matrixDynTex = new BABYLON.DynamicTexture("matrixDynTex", {width:DTWidth, height:DTHeight}, scene);
+              var ctx = matrixDynTex.getContext();
+              
+              // Font sized to fit the plane
+              var font_type = "Arial";
+              var size = 12;
+              var text = "8D";
+              ctx.font = size + "px " + font_type;
+              var textWidth = ctx.measureText(text).width;
+              
+              var ratio = textWidth/size;
+              
+              var font_size = Math.floor(DTWidth / (ratio * 1));
+              var font = font_size + "px " + font_type;
+              
+              var matrixMat = new BABYLON.StandardMaterial("matrixMat", scene);                    
+              matrixMat.diffuseTexture = matrixDynTex;
+              matrixMat.diffuseTexture.hasAlpha = alpha;
+              matrixMat.useAlphaFromDiffuseTexture = useAlpha;
+              
+              var matrixPlane = BABYLON.MeshBuilder.CreatePlane("matrixPlane", {height: planeHeight, width: planeWidth, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+              matrixPlane.material = matrixMat;
+              matrixDynTex.drawText(letter, null, null, font, fontColor, color, true);
+              
+              matrixMat.onBindObservable.add(() => {
+                
+                engine.alphaState.setAlphaBlendFunctionParameters(1, 0x0303 /* ONE MINUS SRC ALPHA */, 1, 0x0303 /* ONE MINUS SRC ALPHA */);
+                
+              });
+              
+              matrixPlane.position = new BABYLON.Vector3((x * xFactor) + posx, (y * yFactor) + posy, (x * zFactor) + posz);
+              matrixPlane.rotation.y = roty;
+                            
+            }
+            
+          }
+          
+          
+
+        }
+        
+        
+        // RCon
+        normalPlane("RCon", 1, 1, -20, 0, 30, 1.25, 0, "blue", "transparent",  "true", "true", 0);
+        arrayPlane(RCon, 2, 2, -20, -2.25, 30, 2.25, 0, "blue", "white", "false", "false", 0);
+        
+        // Placement to the right
+        // normalPlane("SBox", 2.5, 2.5, 75, 35, 40, 0, -2.75, "blue", "transparent",  "true", "true", Math.PI / 2);
+        // matrixPlane(SBox, 5, 5, 75, 30, 40, 0, -5.55, -5.55, "blue", "white", "false", "false", Math.PI / 2);
+        
+        // SBoxBackground
+        normalPlane("SBox", 2.5, 2.5, 40, 0, -75, -2.25, 0, "blue", "transparent",  "true", "true", Math.PI);
+        matrixPlane(SBoxBackground, 5, 5, 40, -5, -75, -5.55, -5.55, 0, "blue", "white", "false", "false", Math.PI);
+                
+        // ciphertext        
+        normalPlane("Ciphertext", 1, 1, -30, -7.50, -20, 0, 1.25, "blue", "transparent",  "true", "true", -Math.PI / 2);
+        
+        // Spawn ciphertext plane
+        function ciphertextPlane(str, planeHeight, planeWidth, posx, posy, posz, xFactor, zFactor, fontColor, color, alpha, useAlpha, roty) {
+          
+          var DTWidth = planeWidth * 128;
+          var DTHeight = planeHeight * 128;
+              
+          for (var i = 0; i < str.length; i++) {
+                          
+              // Get letter from the string
+              var letter = str.charAt(i);
+              
+              // Dynamic texture setup
+              var planeDynTex = new BABYLON.DynamicTexture("PlaneDynTex", {width:DTWidth, height:DTHeight}, scene);
+              var ctx = planeDynTex.getContext();
+              
+              // Font sized to fit the plane
+              var font_type = "Arial";
+              var size = 12;
+              var text = "8D";
+              ctx.font = size + "px " + font_type;
+              var textWidth = ctx.measureText(text).width;
+              
+              var ratio = textWidth/size;
+              
+              var font_size = Math.floor(DTWidth / (ratio * 1));
+              var font = font_size + "px " + font_type;
+              
+              var plainMat = new BABYLON.StandardMaterial("PlainMat", scene);
+              plainMat.diffuseTexture = planeDynTex;
+              plainMat.diffuseTexture.hasAlpha = alpha;
+              plainMat.useAlphaFromDiffuseTexture = useAlpha;
+              
+              var plane = BABYLON.MeshBuilder.CreatePlane("plane", {height: planeHeight, width: planeWidth, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+              plane.material = plainMat;
+              planeDynTex.drawText(letter, null, null, font, fontColor, color, true);
+              
+              plainMat.onBindObservable.add(() => {
+                
+                engine.alphaState.setAlphaBlendFunctionParameters(1, 0x0303 /* ONE MINUS SRC ALPHA */, 1, 0x0303 /* ONE MINUS SRC ALPHA */);
+                
+              });
+    
+              plane.position = new BABYLON.Vector3((i * xFactor) + posx, posy, (i * zFactor) + posz);
+              plane.rotation.y = roty;
+                            
+              const frameRate = 10;
+            
+              // Animation
+              var visibleTog = new BABYLON.Animation("visibleTog", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                
+              var visFrames = [];
+              
+              visFrames.push({
+                frame: 0,
+                value: 0,
+              });
+              
+              visFrames.push({
+                frame: 5 * frameRate / 2,
+                value: 0,
+              });
+              
+              visFrames.push({
+                frame: 5 * frameRate / 2,
+                value: 1,
+              });
+
+              visibleTog.setKeys(visFrames);
+              
+              scene.beginDirectAnimation(plane, [visibleTog], 0, 5 * frameRate / 2, false);
+                                                 
+            }
+          
+        }
+        
+        ciphertextPlane(ciphertext, 1, 1, -30, -8.75, -20, 0, 1.25, "blue", "yellow", "false", "false", -Math.PI / 2);
+        
+        
+        /*
+         * aesRoundKeys
+         *
+         * This method produces the 11 round keys.
+         *
+         * Parameters:
+         *  String KeyHex: System key (16-hex string representation)
+         *
+         * Return value: 11-row string array representation of all the round keys
+         */
+        function aesRoundKeys(KeyHex) {
+                        
+          var row2 = 4, col2 = 4; 
+          var Ke = Array(row2).fill().map(() => Array(col2));
+          Ke = toMatrix(KeyHex);
+
+          // var W = [44][4];
+          var row3 = 44, col = 4; 
+          var W = Array(row3).fill().map(() => Array(col));
+
+          // Make AES key to be the first four columns of W.
+          for (var i = 0; i < 4; i++) {
+            
+            W[i] = Ke[i];
+              
+          }
+          
+          for (var j = 4; j < 44; j++) {
+            
+            if (j % 4 != 0) {
+              
+              // If column index j is NOT a multiple of 4, XOR the fourth past and last column.
+              for(var i = 0; i < 4; i++) {
+                
+                var num = W[j-1][i];
+              
+                if (num.length < 2) {
+                  
+                  var wchar = "0" + W[j-1][i];
+                  
+                  // num.padStart(2,"0");
+                  
+                } else {
+                  
+                  var wchar = W[j-1][i];
+                  
+                }
+                
+                W[j][i] = XorHex(W[j-4][i],wchar);
+                  
+              }
+                
+            } else {
+              
+              // If column index j is a multiple of 4, starting a new round.
+              var rcon = aesRcon(j/4);
+              
+              // 1
+              var num2 = W[j-1][1];
+            
+              if (num2.length < 2) {
+                
+                var wchar2 = "0" + W[j-1][1];
+                
+              } else {
+                
+                var wchar2 = W[j-1][1];
+                
+              }
+              
+              // 2
+              var num3 = W[j-1][2];
+              
+              if (num3.length < 2) {
+                
+                var wchar3 = "0" + W[j-1][2];
+                
+              } else {
+                
+                var wchar3 = W[j-1][2];
+                
+              }
+              
+              // 3
+              var num4 = W[j-1][3];
+              
+              if (num4.length < 2) {
+                
+                var wchar4 = "0" + W[j-1][3];
+                
+              } else {
+                
+                var wchar4 = W[j-1][3];
+                
+              }
+              
+              // 4
+              var num5 = W[j-1][0];
+              
+              if (num5.length < 2) {
+                
+                var wchar5 = "0" + W[j-1][0];
+                
+              } else {
+                
+                var wchar5 = W[j-1][0];
+                
+              }
+              
+              var Wnew = [];
+              Wnew = [          
+                XorHex(rcon, aesSBox(wchar2)),
+                aesSBox(wchar3),
+                aesSBox(wchar4),
+                aesSBox(wchar5)];
+                  
+              for (var i = 0; i < 4; i++) {
+                
+                var num6 = W[j-4][i];
+              
+                if (num6.length < 2) {
+                  
+                  var wchar6 = "0" + W[j-4][i];
+                                    
+                } else {
+                  
+                  var wchar6 = W[j-4][i];
+                  
+                }
+                
+                W[j][i] = XorHex(wchar6, Wnew[i]);
+                  
+              }
+                
+            }
+              
+          }
+          
+          // Every round key is composed of 4 successive readings of the columns W.          
+          var outKeysSize = 11; 
+          var outKeys = Array(outKeysSize).fill();
+          
+          for (var i = 0; i < 11; i++) {
+            
+            var row = "";
+            
+            for(var j = 0; j < 4; j++) {
+              
+              row += W[4 * i + j];
+                
+            }
+            
+            outKeys[i] = row.replaceAll(',', '');
+          }
+
+          return outKeys;
+          
+        }        
+                
+        /*
+         * aesSBox
+         *
+         * This method reads the SBox.
+         *
+         * Parameters:
+         *  String inHex: SBox location
+         *
+         * Return value: SBox value
+         */
+        function aesSBox(inHex) {
+          
+          var num1 = parseInt(inHex.substring(0, 1), 16);
+          var num2 = parseInt(inHex.substring(1), 16);
+          
+          const frameRate = 10;
+          
+          var planeWidth = 5;
+          var planeHeight = 5;
+          
+          var DTWidth = planeWidth * 128;
+          var DTHeight = planeHeight * 128;
+          
+          // get the SBox value
+          var letter = SBox[num1][num2];          
+          // console.log(letter);
+          
+          var sboxDynTex = new BABYLON.DynamicTexture("sboxDynTex", {width:DTWidth, height:DTHeight}, scene);
+          var ctx = sboxDynTex.getContext();
+          var sboxDynTex2 = new BABYLON.DynamicTexture("sboxDynTex2", {width:DTWidth, height:DTHeight}, scene);
+          
+          // Font sized to fit the plane
+          var font_type = "Arial";
+          var size = 12;
+          var text = "8D";
+          ctx.font = size + "px " + font_type;
+          var textWidth = ctx.measureText(text).width;
+          
+          var ratio = textWidth/size;
+          
+          var font_size = Math.floor(DTWidth / (ratio * 1));
+          var font = font_size + "px " + font_type;
+          
+          var sboxMat = new BABYLON.StandardMaterial("sboxMat", scene);                    
+          sboxMat.diffuseTexture = sboxDynTex;
+          var sboxMat2 = new BABYLON.StandardMaterial("sboxMat2", scene);                    
+          sboxMat2.diffuseTexture = sboxDynTex2;
+          
+          var sboxPlane = BABYLON.MeshBuilder.CreatePlane("sboxPlane", {height: planeHeight, width: planeWidth, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+          sboxPlane.material = sboxMat;
+          sboxDynTex.drawText(letter, null, null, font, "blue", "yellow", true);
+          var sboxPlane2 = BABYLON.MeshBuilder.CreatePlane("sboxPlane2", {height: planeHeight, width: planeWidth, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+          sboxPlane2.material = sboxMat2;
+          sboxDynTex2.drawText(letter, null, null, font, "blue", "grey", true);
+                    
+          sboxPlane.position = new BABYLON.Vector3((num2 * -5.55) + 40, (num1 * -5.55) + -5, -70);
+          sboxPlane.rotation.y = Math.PI;
+          sboxPlane2.position = new BABYLON.Vector3((num2 * -5.55) + 40, (num1 * -5.55) + -5, -70);
+          sboxPlane2.rotation.y = Math.PI;
+          
+          // Animation
+          var visibleTog = new BABYLON.Animation("visibleTog", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+          var visibleTog2 = new BABYLON.Animation("visibleTog2", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            
+          var visFrames = [];
+          
+          visFrames.push({
+            frame: 0,
+            value: 0,
+          });
+          
+          visFrames.push({
+            frame: iSBox * frameRate / 2,
+            value: 0,
+          });
+
+          visFrames.push({
+            frame: (2 + iSBox) * frameRate / 2,
+            value: 0,
+          });
+          
+          visFrames.push({
+            frame: (2 + iSBox) * frameRate / 2,
+            value: 1,
+          });
+
+          visFrames.push({
+            frame: (3 + iSBox) * frameRate / 2,
+            value: 1,
+          });
+
+          visFrames.push({
+            frame: (3 + iSBox) * frameRate / 2,
+            value: 0,
+          });
+
+          
+          var visFrames2 = [];
+          
+          visFrames2.push({
+            frame: 0,
+            value: 0,
+          });
+
+          visFrames2.push({
+            frame: (3 + iSBox) * frameRate / 2,
+            value: 0,
+          });
+
+          visFrames2.push({
+            frame: (3 + iSBox) * frameRate / 2,
+            value: 1
+          });
+
+          visibleTog.setKeys(visFrames);
+          visibleTog2.setKeys(visFrames2);
+          
+          scene.beginDirectAnimation(sboxPlane, [visibleTog], 0, (3 + iSBox) * frameRate / 2, false);
+          scene.beginDirectAnimation(sboxPlane2, [visibleTog2], 0, (3 + iSBox) * frameRate / 2, false);
+          
+          iSBox++;
+          
+          return SBox
+            [num1]
+            [num2];
+                                                     
+        }
+  
+        /*
+         * aesRcon
+         *
+         * This method gets each round's constant.
+         *
+         * Parameters:
+         *  int round: the round number
+         *
+         * Return value: round's constant
+         */
+        function aesRcon(round) {
+          
+          const frameRate = 10;
+          
+          var planeWidth = 2;
+          var planeHeight = 2;
+          
+          var DTWidth = planeWidth * 128;
+          var DTHeight = planeHeight * 128;
+          
+          // get the RCon value
+          var letter = RCon[round];
+          
+          var rconDynTex = new BABYLON.DynamicTexture("rconDynTex", {width:DTWidth, height:DTHeight}, scene);
+          var ctx = rconDynTex.getContext();
+          
+          // Font sized to fit the plane
+          var font_type = "Arial";
+          var size = 12;
+          var text = "8D";
+          ctx.font = size + "px " + font_type;
+          var textWidth = ctx.measureText(text).width;
+          
+          var ratio = textWidth/size;
+          
+          var font_size = Math.floor(DTWidth / (ratio * 1));
+          var font = font_size + "px " + font_type;
+          
+          var rconMat = new BABYLON.StandardMaterial("rconMat", scene);                    
+          rconMat.diffuseTexture = rconDynTex;
+          
+          var rconPlane = BABYLON.MeshBuilder.CreatePlane("rconPlane", {height: planeHeight, width: planeWidth, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+          rconPlane.material = rconMat;
+          rconDynTex.drawText(letter, null, null, font, "blue", "yellow", true);
+          
+          // arrayPlane(RCon, 2, 2, -20, -9.75, 30, 2.25, 0, "blue", "white", "false", "false", 0);
+          rconPlane.position = new BABYLON.Vector3((round * 2.25) + -20, -2.25, 25);
+          rconPlane.rotation.y = 0;
+          
+          // Animation
+          var visibleTog = new BABYLON.Animation("visibleTog", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            
+          var visFrames = [];
+          
+          visFrames.push({
+            frame: 0,
+            value: 0,
+          });
+          
+          visFrames.push({
+            frame: (iRCon * 4) * frameRate / 2,
+            value: 0,
+          });
+
+          visFrames.push({
+            frame: (1 + (iRCon * 4)) * frameRate / 2,
+            value: 0,
+          });
+          
+          visFrames.push({
+            frame: (1 + (iRCon * 4)) * frameRate / 2,
+            value: 1,
+          });
+
+          visFrames.push({
+            frame: (5 + (iRCon * 4)) * frameRate / 2,
+            value: 1,
+          });
+
+          visFrames.push({
+            frame: (5 + (iRCon * 4)) * frameRate / 2,
+            value: 0,
+          });
+
+          visibleTog.setKeys(visFrames);
+          
+          scene.beginDirectAnimation(rconPlane, [visibleTog], 0, (5 + (iRCon * 4)) * frameRate / 2, false);
+          
+          iRCon++;
+          
+          return RCon[round];
+              
+        }
+        
+        /*
+         * XorHex
+         *
+         * This method performs the XOR operation.
+         *
+         * Parameters:
+         *  String hex: location value
+         *
+         * Return value: hex value
+         */
+         
+        function XorHex(... hex) {
+          
+          var ret = parseInt(hex[0], 16);
+          
+          for (var i = 1; i < hex.length; i++) {
+                       
+            ret = ret ^ parseInt(hex[i], 16);
+              
+          }
+          
+          var num7 = ret.toString(16).toUpperCase();
+              
+          if (num7.length < 2) {
+            
+            var wchar7 = "0" + ret.toString(16).toUpperCase();
+            
+            // num.padStart(2,"0");
+            
+          } else {
+            
+            var wchar7 = ret.toString(16).toUpperCase();
+            
+          }
+          
+          return wchar7;
+              
+        }
+        
+        /*
+         * AESStateXOR
+         *
+         * This method performs the "Add Round Key" operation. 
+         *
+         * Parameters:
+         *  String[][] sHex: four by four matrix of pairs of hex digits
+         *  String[][] keyHex: four by four matrix
+         *
+         * Return value: XOR of the corresponding input matrix entries
+         *  (four by four matrix of pairs of hex digits)
+         */
+        function AESStateXOR(sHex, keyHex) {
+          
+          var row = 4, col = 4; 
+          var outHex = Array(row).fill().map(() => Array(col));
+          
+          for (var i = 0; i < 4; i++) {
+            
+            for (var j = 0; j < 4; j++) {
+              
+              outHex[i][j] = XorHex(sHex[i][j], keyHex[i][j]);
+                
+            }
+              
+          }
+          
+          return outHex;
+            
+        }
+        
+        /*
+         * AESNibbleSub
+         *
+         * This method performs the "Substitution" operation by running the input matrix
+         * entries through the AES SBox.
+         *
+         * Parameters:
+         *  String[][] inHex: four by four matrix of pairs of hex digits
+         *
+         * Return value: four by four matrix of pairs of hex digits
+         */
+        function AESNibbleSub(inHex) {
+          
+          var row = 4, col = 4; 
+          var outHex = Array(row).fill().map(() => Array(col));
+          
+          for (var i = 0; i < 4; i++) {
+            
+            for (var j = 0; j < 4; j++) {
+              
+              outHex[i][j] = aesSBox(inHex[i][j]);
+                
+            }
+              
+          }
+          
+          return outHex;
+            
+        }
+        
+        /*
+         * AESShiftRow
+         *
+         * This method performs the "Shift Row" operation
+         *
+         * Parameters:
+         *  String [][] inStateHex: four by four matrix of pairs of hex digits
+         *
+         * Return value: shifted four by four matrix of pairs of hex digits
+         */
+        function AESShiftRow(inStateHex) {
+          
+          var row = 4, col = 4; 
+          var outHex = Array(row).fill().map(() => Array(col));
+          
+          for (var i = 0; i < 4; i++) {
+            
+            for (var j = 0; j < 4; j++) {
+              
+              outHex[i][j] = inStateHex[(i + j) % 4][j];
+                
+            }
+              
+          }
+          
+          return outHex;
+            
+        }
+        
+        /*
+         * GMul
+         *
+         * This method performs the Galois Field multiplication
+         * for the AESMixColumn function.
+         *
+         * Parameters:
+         *  String a: string
+         *  String b: string
+         *
+         * Return value: string
+         */
+        function GMul(a, b) {
+          
+          var p = 0;
+          var ai = parseInt(a, 16);
+          var bi = parseInt(b, 16);
+          
+          for (var i = 0; i < 8; i++) {
+            
+            if ((bi & 0x01) == 1) {
+              
+              p = (p ^ ai) & 0xFF;
+                
+            }
+
+            var hi_bit_set = ((ai & 0x80) == 0x80);
+            
+            ai <<= 1;
+            
+            if (hi_bit_set) {
+              
+              ai = (ai ^ 0x1B) & 0xFF;
+                
+            }
+            
+            bi = (bi >> 1) & 0x7F;
+              
+          }
+
+          return p.toString(16).toUpperCase();
+            
+        }
+        
+        /*
+         * toMatrix
+         *
+         * This method converts a string to a four by four matrix.
+         *
+         * Parameters:
+         *  String value: string
+         *
+         * Return value: four by four matrix
+         */
+        function toMatrix(value) {
+          
+          var row = 4, col = 4; 
+          var ret = Array(row).fill().map(() => Array(col));
+          
+          for (var i = 0; i < 4; i++) {
+            
+            for (var j = 0; j < 4; j++) {
+              
+              ret[i][j] = value.substring((i*4 + j) * 2, (i*4 + j + 1) * 2);
+                
+            }
+              
+          }
+          
+          return ret;
+            
+        }
+        
+        /*
+         * fromMatrix
+         *
+         * This method converts a four by four matrix to a string.
+         *
+         * Parameters:
+         *  String[][] value: four by four matrix
+         *
+         * Return value: string
+         */
+        function fromMatrix(value) {
+          
+          var out = "";
+          
+          for (var i = 0; i < 4; i++) {
+            
+            for (var j = 0; j < 4; j++) {
+              
+              out += value[i][j];
+                
+            }
+              
+          }
+          
+          return out;
+            
+        }
+        
+        /*
+         * AESMixColumn
+         *
+         * This method performs the "Mix Column" operation.
+         *
+         * Parameters:
+         *  String[][] inStateHex: four by four matrix of pairs of hex digits
+         *
+         * Return value: four by four matrix of pairs of hex digits
+         */
+        function AESMixColumn(inStateHex) {
+          
+          var row = 4, col = 4; 
+          var out = Array(row).fill().map(() => Array(col));
+          
+          for (var i = 0; i < 4; i++) {
+            
+            out[i][0] = XorHex(GMul("02", inStateHex[i][0]), GMul("03", inStateHex[i][1]), inStateHex[i][2], inStateHex[i][3]);
+            out[i][1] = XorHex(inStateHex[i][0], GMul("02", inStateHex[i][1]), GMul("03", inStateHex[i][2]), inStateHex[i][3]);
+            out[i][2] = XorHex(inStateHex[i][0], inStateHex[i][1], GMul("02", inStateHex[i][2]), GMul("03", inStateHex[i][3]));
+            out[i][3] = XorHex(GMul("03", inStateHex[i][0]), inStateHex[i][1], inStateHex[i][2], GMul("02", inStateHex[i][3]));
+              
+          }
+
+          return out;
+            
+        }
+        
+        /*
+         * AES
+         *
+         * This method performs AES encryption.
+         *
+         * Parameters:
+         *  String pTextHex: plaintext block
+         *  String keyHex: system key
+         *
+         * Return value: ciphertext (all in upper case)
+         */
+        function AES(pTextHex, keyHex) {
+          
+          var keyExp = [];
+          keyExp = aesRoundKeys(keyHex);
+          
+          var row = 4, col = 4;
+          var state = Array(row).fill().map(() => Array(col));
+          state = toMatrix(pTextHex);
+          
+          state = AESStateXOR(state, toMatrix(keyExp[0]));
+
+          for (var i = 1; i < 10; i++) {
+            
+            state = AESNibbleSub(state);
+            state = AESShiftRow(state);
+            state = AESMixColumn(state);
+            state = AESStateXOR(state, toMatrix(keyExp[i]));
+              
+          }
+
+          state = AESNibbleSub(state);
+          state = AESShiftRow(state);
+          state = AESStateXOR(state, toMatrix(keyExp[keyExp.length - 1]));
+                    
+          return fromMatrix(state);
+                      
+        }
+        
+        return scene;
+        
+      }
+      
+      const scene = createScene();
+
+      engine.runRenderLoop(function () {
+        
+        scene.render();
+        
+      });
+
+      window.addEventListener("resize", function () {
+        
+        engine.resize();
+        
+      });
+        
+    </script>
+    
+  </body>
+</html>

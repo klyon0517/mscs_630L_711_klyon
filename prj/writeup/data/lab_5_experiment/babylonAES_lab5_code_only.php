@@ -1,0 +1,686 @@
+<!--  BabylonAES
+
+      * Software: MSCS 630L Semester Project
+      * Filename: babylonAES_lab5_v1.php
+      * Author: Kerry Lyon
+      * Created: March 21, 2022
+
+      * Initial conversion of lab 5.
+
+-->
+
+
+
+<!DOCTYPE html>
+<html  xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+  
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="BabylonAES" />
+    <meta name="keywords" content="aes, encryption, animation, babylonjs, marist, college, cryptography, algorithms" />
+    <meta name="author" content="Kerry Lyon" />
+		
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+		<title>BabylonAES</title>
+		
+    <style>
+    
+      html, body {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #renderCanvas {
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+      }
+      
+    </style>
+        
+    <!-- Babylyon.js -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+        
+  </head>
+  <body>
+    
+    <canvas id="renderCanvas"></canvas>
+       
+    <script>
+    
+      // Sample Input 1
+      const key = "5468617473206D79204B756E67204675";
+      const plaintext = "54776F204F6E65204E696E652054776F";
+      const ciphertext = "29C3505F571420F6402299B31A02D73A";
+      
+      // Sample Input 2
+      // const key = "44722E205061626C6F2052697661732E";
+      // const plaintext = "61697368776172796120706167616C61";
+      // ciphertext: 94E4929435E2D32FBC2B6D58A24AA416
+      
+      console.log(key);
+      console.log(plaintext);
+            
+      const RCon = ["8D", "01", "02", "04", "08", "10", "20", "40", "80", "1B", "36"];
+      const SBox = [
+        ["63", "7C", "77", "7B", "F2", "6B", "6F", "C5", "30", "01", "67", "2B", "FE", "D7", "AB", "76"],
+        ["CA", "82", "C9", "7D", "FA", "59", "47", "F0", "AD", "D4", "A2", "AF", "9C", "A4", "72", "C0"],
+        ["B7", "FD", "93", "26", "36", "3F", "F7", "CC", "34", "A5", "E5", "F1", "71", "D8", "31", "15"],
+        ["04", "C7", "23", "C3", "18", "96", "05", "9A", "07", "12", "80", "E2", "EB", "27", "B2", "75"],
+        ["09", "83", "2C", "1A", "1B", "6E", "5A", "A0", "52", "3B", "D6", "B3", "29", "E3", "2F", "84"],
+        ["53", "D1", "00", "ED", "20", "FC", "B1", "5B", "6A", "CB", "BE", "39", "4A", "4C", "58", "CF"],
+        ["D0", "EF", "AA", "FB", "43", "4D", "33", "85", "45", "F9", "02", "7F", "50", "3C", "9F", "A8"],
+        ["51", "A3", "40", "8F", "92", "9D", "38", "F5", "BC", "B6", "DA", "21", "10", "FF", "F3", "D2"],
+        ["CD", "0C", "13", "EC", "5F", "97", "44", "17", "C4", "A7", "7E", "3D", "64", "5D", "19", "73"],
+        ["60", "81", "4F", "DC", "22", "2A", "90", "88", "46", "EE", "B8", "14", "DE", "5E", "0B", "DB"],
+        ["E0", "32", "3A", "0A", "49", "06", "24", "5C", "C2", "D3", "AC", "62", "91", "95", "E4", "79"],
+        ["E7", "C8", "37", "6D", "8D", "D5", "4E", "A9", "6C", "56", "F4", "EA", "65", "7A", "AE", "08"],
+        ["BA", "78", "25", "2E", "1C", "A6", "B4", "C6", "E8", "DD", "74", "1F", "4B", "BD", "8B", "8A"],
+        ["70", "3E", "B5", "66", "48", "03", "F6", "0E", "61", "35", "57", "B9", "86", "C1", "1D", "9E"],
+        ["E1", "F8", "98", "11", "69", "D9", "8E", "94", "9B", "1E", "87", "E9", "CE", "55", "28", "DF"],
+        ["8C", "A1", "89", "0D", "BF", "E6", "42", "68", "41", "99", "2D", "0F", "B0", "54", "BB", "16"]
+      ];
+      
+            
+      console.log(AES(plaintext, key));
+      
+      
+      /*
+       * aesRoundKeys
+       *
+       * This method produces the 11 round keys.
+       *
+       * Parameters:
+       *  String KeyHex: System key (16-hex string representation)
+       *
+       * Return value: 11-row string array representation of all the round keys
+       */
+      function aesRoundKeys(KeyHex) {
+        
+        console.log("6) aesRoundKeys - KeyHex: " + KeyHex);
+        
+        var row2 = 4, col2 = 4; 
+        var Ke = Array(row2).fill().map(() => Array(col2));
+        Ke = toMatrix(KeyHex);
+        console.log("7) aesRoundKeys - Ke - toMatrix:");
+        console.log(Ke);
+
+        // var W = [44][4];
+        var row3 = 44, col = 4; 
+        var W = Array(row3).fill().map(() => Array(col));
+        // console.log(W);
+
+        // Make AES key to be the first four columns of W.
+        for (var i = 0; i < 4; i++) {
+          
+          W[i] = Ke[i];
+          // console.log(W[0][i]);
+            
+        }
+        
+        for (var j = 4; j < 44; j++) {
+          
+          if (j % 4 != 0) {
+            
+            // If column index j is NOT a multiple of 4, XOR the fourth past and last column.
+            for(var i = 0; i < 4; i++) {
+              
+              // console.log("W[j-1][i]: " + W[j-1][i]);
+              
+              var num = W[j-1][i];
+              
+              if (num.length < 2) {
+                
+                var wchar = "0" + W[j-1][i];
+                
+                // num.padStart(2,"0");
+                
+              } else {
+                
+                var wchar = W[j-1][i];
+                
+              }
+              
+              W[j][i] = XorHex(W[j-4][i],wchar);
+              
+              
+              // W[j][i] = XorHex(W[j-4][i],W[j-1][i]);
+                
+            }
+              
+          } else {
+            
+            // If column index j is a multiple of 4, starting a new round.
+            var rcon = aesRcon(j/4);
+            console.log("9) rcon - aesRcon: " + rcon);
+            // console.log(j-1);
+            // console.log(W[3][1]);
+                        
+            // console.log("XorHex rcon: " + rcon + "aesBox: " + W[j-1][1]);
+            
+            // 1
+            var num2 = W[j-1][1];
+            
+            if (num2.length < 2) {
+              
+              var wchar2 = "0" + W[j-1][1];
+              
+            } else {
+              
+              var wchar2 = W[j-1][1];
+              
+            }
+            
+            // 2
+            var num3 = W[j-1][2];
+            
+            if (num3.length < 2) {
+              
+              var wchar3 = "0" + W[j-1][2];
+              
+            } else {
+              
+              var wchar3 = W[j-1][2];
+              
+            }
+            
+            // 3
+            var num4 = W[j-1][3];
+            
+            if (num4.length < 2) {
+              
+              var wchar4 = "0" + W[j-1][3];
+              
+            } else {
+              
+              var wchar4 = W[j-1][3];
+              
+            }
+            
+            // 4
+            var num5 = W[j-1][0];
+            
+            if (num5.length < 2) {
+              
+              var wchar5 = "0" + W[j-1][0];
+              
+            } else {
+              
+              var wchar5 = W[j-1][0];
+              
+            }
+            
+            
+            
+            var Wnew = [];
+            Wnew = [          
+              XorHex(rcon, aesSBox(wchar2)),
+              aesSBox(wchar3),
+              aesSBox(wchar4),
+              aesSBox(wchar5)];
+            
+            /* Wnew = [          
+              XorHex(rcon, aesSBox(W[j-1][1])),
+              aesSBox(W[j-1][2]),
+              aesSBox(W[j-1][3]),
+              aesSBox(W[j-1][0])]; */
+              
+            console.log("10) Wnew - XorHex:");
+            console.log(Wnew);
+                              
+            for (var i = 0; i < 4; i++) {
+              
+              var num6 = W[j-4][i];
+              
+              if (num6.length < 2) {
+                
+                var wchar6 = "0" + W[j-4][i];
+                
+                // num.padStart(2,"0");
+                
+              } else {
+                
+                var wchar6 = W[j-4][i];
+                
+              }
+              
+              W[j][i] = XorHex(wchar6, Wnew[i]);
+              
+              // W[j][i] = XorHex(W[j-4][i], Wnew[i]);
+                
+            }
+              
+          }
+            
+        }
+        
+        // Every round key is composed of 4 successive readings of the columns W.          
+        var outKeysSize = 11; 
+        var outKeys = Array(outKeysSize).fill();
+        
+        for (var i = 0; i < 11; i++) {
+          
+          var row = "";
+          
+          for(var j = 0; j < 4; j++) {
+            
+            // row += String.join("", W[4 * i + j]);
+            // row += "" + W[4 * i + j];
+            // elements.join('')
+            
+            row += W[4 * i + j];
+            // row.replaceAll(',', '');
+                          
+          }
+          
+          // row.replaceAll(',', '');
+          
+          outKeys[i] = row.replaceAll(',', '');
+          console.log("12.5) aesRoundKeys -  row: " + outKeys[i]);
+          
+        }
+
+        return outKeys;
+        
+      }        
+      
+      /*
+       * aesSBox
+       *
+       * This method reads the SBox.
+       *
+       * Parameters:
+       *  String inHex: SBox location
+       *
+       * Return value: SBox value
+       */
+      function aesSBox(inHex) {
+      
+        console.log("12) aesSBox - inHex: " + inHex);
+        
+        /* var num1 = inHex.substring(0, 1);
+        var num2 = inHex.substring(1);
+        
+        return SBox
+          [parseInt(num1, 16)]
+          [parseInt(num2, 16)]; */
+        
+        return SBox
+          [parseInt(inHex.substring(0, 1), 16)]
+          [parseInt(inHex.substring(1), 16)];
+          
+        // might work?
+        /* return SBox
+          [inHex.substring(0, 1).charCodeAt().toString(16).toUpperCase()]
+          [inHex.substring(1).charCodeAt().toString(16).toUpperCase()]; */
+                    
+      }
+
+      /*
+       * aesRcon
+       *
+       * This method gets each round's constant.
+       *
+       * Parameters:
+       *  int round: the round number
+       *
+       * Return value: round's constant
+       */
+      function aesRcon(round) {
+      
+        console.log("14) aesRcon - round: " + round);
+        
+        return RCon[round];
+            
+      }
+      
+      /*
+       * XorHex
+       *
+       * This method performs the XOR operation.
+       *
+       * Parameters:
+       *  String hex: location value
+       *
+       * Return value: hex value
+       */
+       
+      function XorHex(... hex) {
+      
+        console.log("16) XorHex - hex:");
+        console.log(hex);
+        
+        var ret = parseInt(hex[0], 16);
+        
+        for (var i = 1; i < hex.length; i++) {
+                     
+          ret = ret ^ parseInt(hex[i], 16);
+            
+        }
+        
+        var num7 = ret.toString(16).toUpperCase();
+              
+        if (num7.length < 2) {
+          
+          var wchar7 = "0" + ret.toString(16).toUpperCase();
+          
+          // num.padStart(2,"0");
+          
+        } else {
+          
+          var wchar7 = ret.toString(16).toUpperCase();
+          
+        }
+        
+        return wchar7;
+        
+        // return ret.toString(16).toUpperCase();
+            
+      }
+      
+      /*
+       * AESStateXOR
+       *
+       * This method performs the "Add Round Key" operation. 
+       *
+       * Parameters:
+       *  String[][] sHex: four by four matrix of pairs of hex digits
+       *  String[][] keyHex: four by four matrix
+       *
+       * Return value: XOR of the corresponding input matrix entries
+       *  (four by four matrix of pairs of hex digits)
+       */
+      function AESStateXOR(sHex, keyHex) {
+      
+        console.log("18) AESStateXOR - sHex:");
+        console.log(sHex);
+        console.log("18) AESStateXOR - keyHex:");
+        console.log(keyHex);
+        
+        var row = 4, col = 4; 
+        var outHex = Array(row).fill().map(() => Array(col));
+        
+        for (var i = 0; i < 4; i++) {
+          
+          for (var j = 0; j < 4; j++) {
+            
+            outHex[i][j] = XorHex(sHex[i][j], keyHex[i][j]);
+              
+          }
+            
+        }
+        
+        return outHex;
+          
+      }
+      
+      /*
+       * AESNibbleSub
+       *
+       * This method performs the "Substitution" operation by running the input matrix
+       * entries through the AES SBox.
+       *
+       * Parameters:
+       *  String[][] inHex: four by four matrix of pairs of hex digits
+       *
+       * Return value: four by four matrix of pairs of hex digits
+       */
+      function AESNibbleSub(inHex) {
+      
+        console.log("19) AESNibbleSub - inHex:");
+        console.log(inHex);
+        
+        var row = 4, col = 4; 
+        var outHex = Array(row).fill().map(() => Array(col));
+        
+        for (var i = 0; i < 4; i++) {
+          
+          for (var j = 0; j < 4; j++) {
+            
+            outHex[i][j] = aesSBox(inHex[i][j]);
+              
+          }
+            
+        }
+        
+        return outHex;
+          
+      }
+      
+      /*
+       * AESShiftRow
+       *
+       * This method performs the "Shift Row" operation
+       *
+       * Parameters:
+       *  String [][] inStateHex: four by four matrix of pairs of hex digits
+       *
+       * Return value: shifted four by four matrix of pairs of hex digits
+       */
+      function AESShiftRow(inStateHex) {
+      
+        console.log("20) AESShiftRow - inStateHex:");
+        console.log(inStateHex);
+        
+        var row = 4, col = 4; 
+        var outHex = Array(row).fill().map(() => Array(col));
+        
+        for (var i = 0; i < 4; i++) {
+          
+          for (var j = 0; j < 4; j++) {
+            
+            outHex[i][j] = inStateHex[(i + j) % 4][j];
+              
+          }
+            
+        }
+        
+        return outHex;
+          
+      }
+      
+      /*
+       * GMul
+       *
+       * This method performs the Galois Field multiplication
+       * for the AESMixColumn function.
+       *
+       * Parameters:
+       *  String a: string
+       *  String b: string
+       *
+       * Return value: string
+       */
+      function GMul(a, b) {
+      
+        // console.log("21) GMul - a: " + a + ", b: " + b);
+        
+        var p = 0;
+        var ai = parseInt(a, 16);
+        var bi = parseInt(b, 16);
+        
+        for (var i = 0; i < 8; i++) {
+          
+          if ((bi & 0x01) == 1) {
+            
+            p = (p ^ ai) & 0xFF;
+              
+          }
+
+          var hi_bit_set = ((ai & 0x80) == 0x80);
+          
+          ai <<= 1;
+          
+          if (hi_bit_set) {
+            
+            ai = (ai ^ 0x1B) & 0xFF;
+              
+          }
+          
+          bi = (bi >> 1) & 0x7F;
+            
+        }
+
+        return p.toString(16).toUpperCase();
+          
+      }
+      
+      /*
+       * toMatrix
+       *
+       * This method converts a string to a four by four matrix.
+       *
+       * Parameters:
+       *  String value: string
+       *
+       * Return value: four by four matrix
+       */
+      function toMatrix(value) {
+      
+        console.log("22) toMatrix - value: " + value);
+        
+        var row = 4, col = 4; 
+        var ret = Array(row).fill().map(() => Array(col));
+        
+        for (var i = 0; i < 4; i++) {
+          
+          for (var j = 0; j < 4; j++) {
+            
+            ret[i][j] = value.substring((i*4 + j) * 2, (i*4 + j + 1) * 2);
+              
+          }
+            
+        }
+        
+        return ret;
+          
+      }
+      
+      /*
+       * fromMatrix
+       *
+       * This method converts a four by four matrix to a string.
+       *
+       * Parameters:
+       *  String[][] value: four by four matrix
+       *
+       * Return value: string
+       */
+      function fromMatrix(value) {
+      
+        console.log("23) fromMatrix - value:");
+        console.log(value);
+        
+        var out = "";
+        
+        for (var i = 0; i < 4; i++) {
+          
+          for (var j = 0; j < 4; j++) {
+            
+            out += value[i][j];
+              
+          }
+            
+        }
+        
+        return out;
+          
+      }
+      
+      /*
+       * AESMixColumn
+       *
+       * This method performs the "Mix Column" operation.
+       *
+       * Parameters:
+       *  String[][] inStateHex: four by four matrix of pairs of hex digits
+       *
+       * Return value: four by four matrix of pairs of hex digits
+       */
+      function AESMixColumn(inStateHex) {
+      
+        console.log("24) AESMixColumn - inStateHex:");
+        console.log(inStateHex);
+        
+        var row = 4, col = 4; 
+        var out = Array(row).fill().map(() => Array(col));
+        
+        for (var i = 0; i < 4; i++) {
+          
+          out[i][0] = XorHex(GMul("02", inStateHex[i][0]), GMul("03", inStateHex[i][1]), inStateHex[i][2], inStateHex[i][3]);
+          out[i][1] = XorHex(inStateHex[i][0], GMul("02", inStateHex[i][1]), GMul("03", inStateHex[i][2]), inStateHex[i][3]);
+          out[i][2] = XorHex(inStateHex[i][0], inStateHex[i][1], GMul("02", inStateHex[i][2]), GMul("03", inStateHex[i][3]));
+          out[i][3] = XorHex(GMul("03", inStateHex[i][0]), inStateHex[i][1], inStateHex[i][2], GMul("02", inStateHex[i][3]));
+            
+        }
+
+        return out;
+          
+      }
+      
+      /*
+       * AES
+       *
+       * This method performs AES encryption.
+       *
+       * Parameters:
+       *  String pTextHex: plaintext block
+       *  String keyHex: system key
+       *
+       * Return value: ciphertext (all in upper case)
+       */
+      function AES(pTextHex, keyHex) {
+        
+        // this needs to be an array (with 11 keys)
+        // how do you set up the single array again?
+        var keyExp = [];
+        keyExp = aesRoundKeys(keyHex);
+    
+        console.log("1) AES:");
+        console.log(keyExp);
+        
+        // this needs to be a multidimensional array
+        // size 4 x 4 matrix        
+        var row = 4, col = 4; 
+        var state = Array(row).fill().map(() => Array(col));
+        state = toMatrix(pTextHex);
+        
+        state = AESStateXOR(state, toMatrix(keyExp[0]));
+    
+        console.log("2) AES - state - AESStateXOR:");
+        console.log(state);
+
+        for (var i = 1; i < 10; i++) {
+          
+          state = AESNibbleSub(state);
+          state = AESShiftRow(state);
+          state = AESMixColumn(state);
+          state = AESStateXOR(state, toMatrix(keyExp[i]));
+            
+        }
+
+        state = AESNibbleSub(state);
+        console.log("3) AES - state - AESNibbleSub:");
+        console.log(state);
+    
+        state = AESShiftRow(state);
+        console.log("4) AES - state - AESShiftRow:");
+        console.log(state);
+    
+        state = AESStateXOR(state, toMatrix(keyExp[keyExp.length - 1]));
+        console.log("5) AES - state - AESStateXOR:");
+        console.log(state);
+        
+        return fromMatrix(state);
+                    
+      }
+                        
+    </script>
+    
+  </body>
+</html>

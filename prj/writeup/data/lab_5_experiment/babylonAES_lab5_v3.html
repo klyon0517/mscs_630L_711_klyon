@@ -163,65 +163,61 @@
         var letter;
         
         // Spawn normal plane
-        function normalPlane(str, planeHeight, planeWidth, posx, posy, posz, xFactor, zFactor, fontColor, color, alpha, useAlpha, roty) {
+        function normalPlane(str, heightFactor, posx, posy, posz, fontColor, color, alpha, useAlpha, roty) {
           
-          var DTWidth = planeWidth * 128;
-          var DTHeight = planeHeight * 128;
-              
-          for (var i = 0; i < str.length; i++) {
-                          
-              // Get letter from the string
-              letter = str.charAt(i);
-              
-              // Dynamic texture setup
-              var planeDynTex = new BABYLON.DynamicTexture("PlaneDynTex", {width:DTWidth, height:DTHeight}, scene);
-              var ctx = planeDynTex.getContext();
-              
-              // Font sized to fit the plane
-              var font_type = "Arial";
-              var size = 12;
-              var text = "8D";
-              ctx.font = size + "px " + font_type;
-              var textWidth = ctx.measureText(text).width;
-              
-              var ratio = textWidth/size;
-              
-              var font_size = Math.floor(DTWidth / (ratio * 1));
-              var font = font_size + "px " + font_type;
-              
-              var plainMat = new BABYLON.StandardMaterial("PlainMat", scene);
-              plainMat.diffuseTexture = planeDynTex;
-              plainMat.diffuseTexture.hasAlpha = alpha;
-              plainMat.useAlphaFromDiffuseTexture = useAlpha;
-              
-              var plane = BABYLON.MeshBuilder.CreatePlane("plane", {height: planeHeight, width: planeWidth, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
-              plane.material = plainMat;
-              planeDynTex.drawText(letter, null, null, font, fontColor, color, true);
-              
-              plainMat.onBindObservable.add(() => {
-                
-                engine.alphaState.setAlphaBlendFunctionParameters(1, 0x0303 /* ONE MINUS SRC ALPHA */, 1, 0x0303 /* ONE MINUS SRC ALPHA */);
-                
-              });
-    
-              plane.position = new BABYLON.Vector3((i * xFactor) + posx, posy, (i * zFactor) + posz);
-              plane.rotation.y = roty;
-                                                           
-            }
+          //Set font
+          var font_size = 48;
+          var font = "bold " + font_size + "px Arial";
+        
+          //Set height for plane
+          var planeHeight = heightFactor;
           
+          //Set height for dynamic texture
+          var DTHeight = 1.5 * font_size; //or set as wished
+          
+          //Calcultae ratio
+          var ratio = planeHeight/DTHeight;
+          
+          //Use a temporay dynamic texture to calculate the length of the text on the dynamic texture canvas
+          var temp = new BABYLON.DynamicTexture("DynamicTexture", 64, scene);
+          var tmpctx = temp.getContext();
+          tmpctx.font = font;
+          var DTWidth = tmpctx.measureText(str).width + 8;
+          
+          //Calculate width the plane has to be 
+          var planeWidth = DTWidth * ratio;
+          
+          // Dynamic texture setup
+          var planeDynTex = new BABYLON.DynamicTexture("PlaneDynTex", {width:DTWidth, height:DTHeight}, scene);
+          var ctx = planeDynTex.getContext();
+          
+          var plainMat = new BABYLON.StandardMaterial("PlainMat", scene);
+          plainMat.diffuseTexture = planeDynTex;
+          plainMat.diffuseTexture.hasAlpha = alpha;
+          plainMat.useAlphaFromDiffuseTexture = useAlpha;
+          
+          var plane = BABYLON.MeshBuilder.CreatePlane("plane", {height: planeHeight, width: planeWidth, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+          plane.material = plainMat;
+          planeDynTex.drawText(str, null, null, font, fontColor, color, true);
+                       
+          plainMat.onBindObservable.add(() => {
+            
+            engine.alphaState.setAlphaBlendFunctionParameters(1, 0x0303 /* ONE MINUS SRC ALPHA */, 1, 0x0303 /* ONE MINUS SRC ALPHA */);
+            
+          });
+
+          plane.position = new BABYLON.Vector3(posx, posy, posz);
+          plane.rotation.y = roty;
+                      
         }
         
         // key
-        // normalPlane("Key", 1, 1, -20, 0, 30, 1.25, 0, "blue", "transparent", "true", "true", 0);
-        // normalPlane(key, 1, 1, -20, -1.25, 30, 1.25, 0, "blue", "white", "false", "false", 0);
-        normalPlane("Key", 1, 1, -30, 0, -20, 0, 1.25, "blue", "transparent", "true", "true", -Math.PI / 2);
-        normalPlane(key, 1, 1, -30, -1.25, -20, 0, 1.25, "blue", "white", "false", "false", -Math.PI / 2);
+        normalPlane("Key", 2, -30, 0, 0, "blue", "transparent", "true", "true", -Math.PI / 2);
+        normalPlane(key, 2, -30, -2.25, 0, "blue", "white", "false", "false", -Math.PI / 2);
         
-        // plaintext        
-        // normalPlane("Plaintext", 1, 1, -20, -3.75, 30, 1.25, 0, "blue", "transparent",  "true", "true", 0);
-        // normalPlane(plaintext, 1, 1, -20, -5, 30, 1.25, 0, "blue", "white", "false", "false", 0);
-        normalPlane("Plaintext", 1, 1, -30, -3.75, -20, 0, 1.25, "blue", "transparent",  "true", "true", -Math.PI / 2);
-        normalPlane(plaintext, 1, 1, -30, -5, -20, 0, 1.25, "blue", "white", "false", "false", -Math.PI / 2);
+        // plaintext
+        normalPlane("Plaintext", 2, -30, -7.25, 0, "blue", "transparent",  "true", "true", -Math.PI / 2);
+        normalPlane(plaintext, 2, -30, -9.5, 0, "blue", "white", "false", "false", -Math.PI / 2);
         
         // Spawn array plane
         function arrayPlane(matrix, planeHeight, planeWidth, posx, posy, posz, xFactor, zFactor, fontColor, color, alpha, useAlpha, roty) {
@@ -326,7 +322,7 @@
         
         
         // RCon
-        normalPlane("RCon", 1, 1, -20, 0, 30, 1.25, 0, "blue", "transparent",  "true", "true", 0);
+        normalPlane("RCon", 2, -20, 0, 30, "blue", "transparent",  "true", "true", 0);
         arrayPlane(RCon, 2, 2, -20, -2.25, 30, 2.25, 0, "blue", "white", "false", "false", 0);
         
         // Placement to the right
@@ -334,88 +330,88 @@
         // matrixPlane(SBox, 5, 5, 75, 30, 40, 0, -5.55, -5.55, "blue", "white", "false", "false", Math.PI / 2);
         
         // SBoxBackground
-        normalPlane("SBox", 2.5, 2.5, 40, 0, -75, -2.25, 0, "blue", "transparent",  "true", "true", Math.PI);
+        normalPlane("SBox", 2.5, 40, 0, -75, "blue", "transparent",  "true", "true", Math.PI);
         matrixPlane(SBoxBackground, 5, 5, 40, -5, -75, -5.55, -5.55, 0, "blue", "white", "false", "false", Math.PI);
                 
         // ciphertext        
-        normalPlane("Ciphertext", 1, 1, -30, -7.50, -20, 0, 1.25, "blue", "transparent",  "true", "true", -Math.PI / 2);
+        normalPlane("Ciphertext", 2, -30, -14.50, 0, "blue", "transparent",  "true", "true", -Math.PI / 2);
         
         // Spawn ciphertext plane
-        function ciphertextPlane(str, planeHeight, planeWidth, posx, posy, posz, xFactor, zFactor, fontColor, color, alpha, useAlpha, roty) {
+        function ciphertextPlane(str, heightFactor, posx, posy, posz, fontColor, color, alpha, useAlpha, roty) {
           
-          var DTWidth = planeWidth * 128;
-          var DTHeight = planeHeight * 128;
+          //Set font
+          var font_size = 48;
+          var font = "bold " + font_size + "px Arial";
+        
+          //Set height for plane
+          var planeHeight = heightFactor;
+          
+          //Set height for dynamic texture
+          var DTHeight = 1.5 * font_size; //or set as wished
+          
+          //Calcultae ratio
+          var ratio = planeHeight/DTHeight;
+          
+          //Use a temporay dynamic texture to calculate the length of the text on the dynamic texture canvas
+          var temp = new BABYLON.DynamicTexture("DynamicTexture", 64, scene);
+          var tmpctx = temp.getContext();
+          tmpctx.font = font;
+          var DTWidth = tmpctx.measureText(str).width + 8;
+          
+          //Calculate width the plane has to be 
+          var planeWidth = DTWidth * ratio;
               
-          for (var i = 0; i < str.length; i++) {
-                          
-              // Get letter from the string
-              var letter = str.charAt(i);
-              
-              // Dynamic texture setup
-              var planeDynTex = new BABYLON.DynamicTexture("PlaneDynTex", {width:DTWidth, height:DTHeight}, scene);
-              var ctx = planeDynTex.getContext();
-              
-              // Font sized to fit the plane
-              var font_type = "Arial";
-              var size = 12;
-              var text = "8D";
-              ctx.font = size + "px " + font_type;
-              var textWidth = ctx.measureText(text).width;
-              
-              var ratio = textWidth/size;
-              
-              var font_size = Math.floor(DTWidth / (ratio * 1));
-              var font = font_size + "px " + font_type;
-              
-              var plainMat = new BABYLON.StandardMaterial("PlainMat", scene);
-              plainMat.diffuseTexture = planeDynTex;
-              plainMat.diffuseTexture.hasAlpha = alpha;
-              plainMat.useAlphaFromDiffuseTexture = useAlpha;
-              
-              var plane = BABYLON.MeshBuilder.CreatePlane("plane", {height: planeHeight, width: planeWidth, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
-              plane.material = plainMat;
-              planeDynTex.drawText(letter, null, null, font, fontColor, color, true);
-              
-              plainMat.onBindObservable.add(() => {
-                
-                engine.alphaState.setAlphaBlendFunctionParameters(1, 0x0303 /* ONE MINUS SRC ALPHA */, 1, 0x0303 /* ONE MINUS SRC ALPHA */);
-                
-              });
-    
-              plane.position = new BABYLON.Vector3((i * xFactor) + posx, posy, (i * zFactor) + posz);
-              plane.rotation.y = roty;
-                            
-              const frameRate = 10;
+          // Dynamic texture setup
+          var planeDynTex = new BABYLON.DynamicTexture("PlaneDynTex", {width:DTWidth, height:DTHeight}, scene);
+          var ctx = planeDynTex.getContext();
+          
+          var plainMat = new BABYLON.StandardMaterial("PlainMat", scene);
+          plainMat.diffuseTexture = planeDynTex;
+          plainMat.diffuseTexture.hasAlpha = alpha;
+          plainMat.useAlphaFromDiffuseTexture = useAlpha;
+          
+          var plane = BABYLON.MeshBuilder.CreatePlane("plane", {height: planeHeight, width: planeWidth, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+          plane.material = plainMat;
+          planeDynTex.drawText(str, null, null, font, fontColor, color, true);
+          
+          plainMat.onBindObservable.add(() => {
             
-              // Animation
-              var visibleTog = new BABYLON.Animation("visibleTog", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-                
-              var visFrames = [];
-              
-              visFrames.push({
-                frame: 0,
-                value: 0,
-              });
-              
-              visFrames.push({
-                frame: 5 * frameRate / 2,
-                value: 0,
-              });
-              
-              visFrames.push({
-                frame: 5 * frameRate / 2,
-                value: 1,
-              });
+            engine.alphaState.setAlphaBlendFunctionParameters(1, 0x0303 /* ONE MINUS SRC ALPHA */, 1, 0x0303 /* ONE MINUS SRC ALPHA */);
+            
+          });
 
-              visibleTog.setKeys(visFrames);
-              
-              scene.beginDirectAnimation(plane, [visibleTog], 0, 5 * frameRate / 2, false);
-                                                 
-            }
+          plane.position = new BABYLON.Vector3(posx, posy, posz);
+          plane.rotation.y = roty;
+                        
+          const frameRate = 10;
+        
+          // Animation
+          var visibleTog = new BABYLON.Animation("visibleTog", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            
+          var visFrames = [];
           
+          visFrames.push({
+            frame: 0,
+            value: 0,
+          });
+          
+          visFrames.push({
+            frame: 5 * frameRate / 2,
+            value: 0,
+          });
+          
+          visFrames.push({
+            frame: 5 * frameRate / 2,
+            value: 1,
+          });
+
+          visibleTog.setKeys(visFrames);
+          
+          scene.beginDirectAnimation(plane, [visibleTog], 0, 5 * frameRate / 2, false);
+                                                 
         }
         
-        ciphertextPlane(ciphertext, 1, 1, -30, -8.75, -20, 0, 1.25, "blue", "yellow", "false", "false", -Math.PI / 2);
+        ciphertextPlane(ciphertext, 2, -30, -16.75, 0, "blue", "yellow", "false", "false", -Math.PI / 2);
         
         
         /*
@@ -570,122 +566,118 @@
                 
             }
             
-            outKeys[i] = row.replaceAll(',', '');
-            
-            const frameRate = 10;
-          
-            var planeWidth = 1;
-            var planeHeight = 1;
-            
-            var DTWidth = planeWidth * 128;
-            var DTHeight = planeHeight * 128;
+            outKeys[i] = row.replaceAll(',', '');            
             
             var strOK = outKeys[i];
             
-            for (var iOK = 0; iOK < strOK.length; iOK++) {
-            
-              // get the outKey letter value
-              var letter = strOK.charAt(iOK);
-              
-              var outKeyDynTex = new BABYLON.DynamicTexture("outKeyDynTex", {width:DTWidth, height:DTHeight}, scene);
-              var ctx = outKeyDynTex.getContext();
-              var outKeyDynTex2 = new BABYLON.DynamicTexture("outKeyDynTex2", {width:DTWidth, height:DTHeight}, scene);
-              
-              // Font sized to fit the plane
-              var font_type = "Arial";
-              var size = 12;
-              var text = "8D";
-              ctx.font = size + "px " + font_type;
-              var textWidth = ctx.measureText(text).width;
-              
-              var ratio = textWidth/size;
-              
-              var font_size = Math.floor(DTWidth / (ratio * 1));
-              var font = font_size + "px " + font_type;
-              
-              var outKeyMat = new BABYLON.StandardMaterial("outKeyMat", scene);                    
-              outKeyMat.diffuseTexture = outKeyDynTex;
-              var outKeyMat2 = new BABYLON.StandardMaterial("outKeyMat2", scene);                    
-              outKeyMat2.diffuseTexture = outKeyDynTex2;
-              
-              var outKeyPlane = BABYLON.MeshBuilder.CreatePlane("outKeyPlane", {height: planeHeight, width: planeWidth, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
-              outKeyPlane.material = outKeyMat;
-              outKeyDynTex.drawText(letter, null, null, font, "blue", "yellow", true);
-              var outKeyPlane2 = BABYLON.MeshBuilder.CreatePlane("outKeyPlane2", {height: planeHeight, width: planeWidth, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
-              outKeyPlane2.material = outKeyMat2;
-              outKeyDynTex2.drawText(letter, null, null, font, "blue", "grey", true);
-              
-              outKeyPlane.position = new BABYLON.Vector3((i * -1.25) + 40, (i * -1.5) + 10, (iOK * -1.25) + 20);
-              outKeyPlane.rotation.y = Math.PI / 2;
-              outKeyPlane2.position = new BABYLON.Vector3((i * -1.25) + 40, (i * -1.5) + 10, (iOK * -1.25) + 20);
-              outKeyPlane2.rotation.y = Math.PI / 2;
-              
-              // Animation
-              var visibleTog = new BABYLON.Animation("visibleTog", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-              var visibleTog2 = new BABYLON.Animation("visibleTog2", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-                
-              var visFrames = [];
-              
-              visFrames.push({
-                frame: 0,
-                value: 0,
-              });
-              
-              visFrames.push({
-                frame: (i * 4) * frameRate / 2,
-                value: 0,
-              });
-              
-              visFrames.push({
-                frame: (1 + (i * 4)) * frameRate / 2,
-                value: 0,
-              });
-
-              visFrames.push({
-                frame: (5 + (i * 4)) * frameRate / 2,
-                value: 0,
-              });
-              
-              visFrames.push({
-                frame: (5 + (i * 4)) * frameRate / 2,
-                value: 1,
-              });
-              
-              visFrames.push({
-                frame: (6 + (i * 4)) * frameRate / 2,
-                value: 1,
-              });
-              
-              visFrames.push({
-                frame: (6 + (i * 4)) * frameRate / 2,
-                value: 0,
-              });
-              
-              var visFrames2 = [];
+            const frameRate = 10;
           
-              visFrames2.push({
-                frame: 0,
-                value: 0,
-              });
-
-              visFrames2.push({
-                frame: (6 + (i * 4)) * frameRate / 2,
-                value: 0,
-              });
-
-              visFrames2.push({
-                frame: (6 + (i * 4)) * frameRate / 2,
-                value: 1
-              });
-
-              visibleTog.setKeys(visFrames);
-              visibleTog2.setKeys(visFrames2);
-              
-              scene.beginDirectAnimation(outKeyPlane, [visibleTog], 0, (6 + (i * 4)) * frameRate / 2, false);
-              scene.beginDirectAnimation(outKeyPlane2, [visibleTog2], 0, (6 + (i * 4)) * frameRate / 2, false);
-              
-            }
+            //Set font
+            var font_size = 48;
+            var font = "bold " + font_size + "px Arial";
+          
+            //Set height for plane
+            var planeHeight = 2;
             
+            //Set height for dynamic texture
+            var DTHeight = 1.5 * font_size; //or set as wished
+            
+            //Calcultae ratio
+            var ratio = planeHeight/DTHeight;
+            
+            //Use a temporay dynamic texture to calculate the length of the text on the dynamic texture canvas
+            var temp = new BABYLON.DynamicTexture("DynamicTexture", 64, scene);
+            var tmpctx = temp.getContext();
+            tmpctx.font = font;
+            var DTWidth = tmpctx.measureText(strOK).width + 8;
+            
+            //Calculate width the plane has to be 
+            var planeWidth = DTWidth * ratio;
+                        
+            var outKeyDynTex = new BABYLON.DynamicTexture("outKeyDynTex", {width:DTWidth, height:DTHeight}, scene);
+            var outKeyDynTex2 = new BABYLON.DynamicTexture("outKeyDynTex2", {width:DTWidth, height:DTHeight}, scene);
+            
+            var outKeyMat = new BABYLON.StandardMaterial("outKeyMat", scene);                    
+            outKeyMat.diffuseTexture = outKeyDynTex;
+            var outKeyMat2 = new BABYLON.StandardMaterial("outKeyMat2", scene);                    
+            outKeyMat2.diffuseTexture = outKeyDynTex2;
+            
+            var outKeyPlane = BABYLON.MeshBuilder.CreatePlane("outKeyPlane", {height: planeHeight, width: planeWidth, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+            outKeyPlane.material = outKeyMat;
+            outKeyDynTex.drawText(strOK, null, null, font, "blue", "yellow", true);
+            var outKeyPlane2 = BABYLON.MeshBuilder.CreatePlane("outKeyPlane2", {height: planeHeight, width: planeWidth, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+            outKeyPlane2.material = outKeyMat2;
+            outKeyDynTex2.drawText(strOK, null, null, font, "blue", "grey", true);
+            
+            outKeyPlane.position = new BABYLON.Vector3((i * -1.25) + 30, (i * -3) + 0, 15);
+            outKeyPlane.rotation.y = Math.PI / 2;
+            outKeyPlane2.position = new BABYLON.Vector3((i * -1.25) + 30, (i * -3) + 0, 15);
+            outKeyPlane2.rotation.y = Math.PI / 2;
+            
+            // Animation
+            var visibleTog = new BABYLON.Animation("visibleTog", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            var visibleTog2 = new BABYLON.Animation("visibleTog2", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+              
+            var visFrames = [];
+            
+            visFrames.push({
+              frame: 0,
+              value: 0,
+            });
+            
+            visFrames.push({
+              frame: (i * 4) * frameRate / 2,
+              value: 0,
+            });
+            
+            visFrames.push({
+              frame: (1 + (i * 4)) * frameRate / 2,
+              value: 0,
+            });
+
+            visFrames.push({
+              frame: (5 + (i * 4)) * frameRate / 2,
+              value: 0,
+            });
+            
+            visFrames.push({
+              frame: (5 + (i * 4)) * frameRate / 2,
+              value: 1,
+            });
+            
+            visFrames.push({
+              frame: (6 + (i * 4)) * frameRate / 2,
+              value: 1,
+            });
+            
+            visFrames.push({
+              frame: (6 + (i * 4)) * frameRate / 2,
+              value: 0,
+            });
+            
+            var visFrames2 = [];
+        
+            visFrames2.push({
+              frame: 0,
+              value: 0,
+            });
+
+            visFrames2.push({
+              frame: (6 + (i * 4)) * frameRate / 2,
+              value: 0,
+            });
+
+            visFrames2.push({
+              frame: (6 + (i * 4)) * frameRate / 2,
+              value: 1
+            });
+
+            visibleTog.setKeys(visFrames);
+            visibleTog2.setKeys(visFrames2);
+            
+            scene.beginDirectAnimation(outKeyPlane, [visibleTog], 0, (6 + (i * 4)) * frameRate / 2, false);
+            scene.beginDirectAnimation(outKeyPlane2, [visibleTog2], 0, (6 + (i * 4)) * frameRate / 2, false);
+              
           }
 
           return outKeys;
@@ -908,6 +900,7 @@
           scene.beginDirectAnimation(rconPlane, [visibleTog], 0, (5 + (iRCon * 4)) * frameRate / 2, false);
           
           iRCon++;
+          console.log(iRCon);
           
           return RCon[round];
               
@@ -1105,6 +1098,7 @@
           var outHex = Array(row).fill().map(() => Array(col));
           
           var num = 0;
+          var num2 = 17;
           
           for (var i = 0; i < 4; i++) {
             
@@ -1143,7 +1137,20 @@
               
               var outHexPlane = BABYLON.MeshBuilder.CreatePlane("outHexPlane", {height: planeHeight, width: planeWidth, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
               outHexPlane.material = outHexMat;
-              outHexDynTex.drawText(letter, null, null, font, "blue", "yellow", true);
+              
+              if (num == 0 || num == 4 || num == 8 || num == 12) {
+              
+                outHexDynTex.drawText(letter, null, null, font, "blue", "white", true);
+                
+              } else if (num == 1 || num == 2 || num == 3 || num == 5 || num == 6 || num == 9) {
+              
+                outHexDynTex.drawText(letter, null, null, font, "blue", "grey", true);
+              
+              } else {
+              
+                outHexDynTex.drawText(letter, null, null, font, "blue", "yellow", true);
+                
+              }
               
               outHexPlane.position = new BABYLON.Vector3((i * 2.25) + -10, (j * -2.25) + -6.75, 27.75);
               outHexPlane.rotation.y = 0;
@@ -1169,20 +1176,21 @@
               });
 
               visFrames.push({
-                frame: (num + ((18 + (numI * 16)))) * frameRate / 2,
+                frame: (num + ((num2 + 16 + (numI * 16)))) * frameRate / 2,
                 value: 1,
               });
 
               visFrames.push({
-                frame: (num + ((18 + (numI * 16)))) * frameRate / 2,
+                frame: (num + ((num2 + 16 + (numI * 16)))) * frameRate / 2,
                 value: 0,
               });
 
               visibleTog.setKeys(visFrames);
               
-              scene.beginDirectAnimation(outHexPlane, [visibleTog], 0, 180 * frameRate / 2, false);
+              scene.beginDirectAnimation(outHexPlane, [visibleTog], 0, (num + ((num2 + 16 + (numI * 16)))) * frameRate / 2, false);
             
               num++;
+              num2--;
               
             }
               
@@ -1341,16 +1349,17 @@
           var state = Array(row).fill().map(() => Array(col));
           var state2 = Array(row).fill().map(() => Array(col));
           var state3 = Array(row).fill().map(() => Array(col));
+          var state4 = Array(row).fill().map(() => Array(col));
           state = toMatrix(pTextHex);
           
           state = AESStateXOR(state, toMatrix(keyExp[0]));
 
           for (var i = 1; i < 10; i++) {
                         
-            normalPlane("Nibble", 1, 1, -20, -5, 30, 1.25, 0, "blue", "transparent",  "true", "true", 0);
+            normalPlane("Nibble", 2, -20, -5, 30, "blue", "transparent",  "true", "true", 0);
             state2 = AESNibbleSub(state, i);
             
-            normalPlane("Shift", 1, 1, -10, -5, 30, 1.25, 0, "blue", "transparent",  "true", "true", 0);
+            normalPlane("Shift", 2, -10, -5, 30, "blue", "transparent",  "true", "true", 0);
             state3 = AESShiftRow(state2, i);
             
             // draw AESNibbleSub

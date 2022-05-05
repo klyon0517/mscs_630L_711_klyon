@@ -1,11 +1,11 @@
 <!--  BabylonAES
 
       * Software: MSCS 630L Semester Project
-      * Filename: babylonAES_lab5_v1.php
+      * Filename: babylonAES_lab5_v6.php
       * Author: Kerry Lyon
-      * Created: March 21, 2022
+      * Created: May 4, 2022
 
-      * Initial conversion of lab 5.
+      * Finishing touches on AES encryption animation.
 
 -->
 
@@ -71,18 +71,6 @@
         const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
         light.groundColor = new BABYLON.Color3(1, 1, 1);
         
-        // Ground plane
-        // const ground = BABYLON.MeshBuilder.CreateGround("ground", {height: 512, width: 512, subdivisions: 64}, scene);
-        // ground.position.y = -58
-        
-        // var groundMat = new BABYLON.StandardMaterial("groundMat", scene);
-        // groundMat.diffuseColor = new BABYLON.Color3(0, 0, 0);
-        // groundMat.specularColor = new BABYLON.Color3(0, 0, 0);
-        // ground.material = groundMat;
-        
-        
-        
-        
         // ------------------------ plaintext ------------------------- //
         
         // Sample Input 1
@@ -139,7 +127,9 @@
         ];
         
         var i4 = 0;
+        var i4_2 = 0;
         var iSBox = 0;
+        var iSBox2 = 0;
         var iRCon = 0;
         var iXOR = 0;        
         var sXOR = 0;       
@@ -320,10 +310,6 @@
         // Rounds        
         normalPlane("Round Keys", 2, 10, 0, 30, "blue", "transparent",  "true", "true", 0);
         
-        // Placement to the right
-        // normalPlane("SBox", 2.5, 2.5, 75, 35, 40, 0, -2.75, "blue", "transparent",  "true", "true", Math.PI / 2);
-        // matrixPlane(SBox, 5, 5, 75, 30, 40, 0, -5.55, -5.55, "blue", "white", "false", "false", Math.PI / 2);
-        
         // SBoxBackground
         normalPlane("SBox", 2.5, 40, 0, -75, "blue", "transparent",  "true", "true", Math.PI);
         matrixPlane(SBoxBackground, 5, 5, 40, -5, -75, -5.55, -5.55, 0, "blue", "white", "false", "false", Math.PI);
@@ -332,7 +318,6 @@
         normalPlane("Ciphertext", 2, -30, -14.50, 0, "blue", "transparent",  "true", "true", -Math.PI / 2);
         
         // Spawn ciphertext plane
-        // adjust the animation timing so it's at the end
         function ciphertextPlane(str, heightFactor, posx, posy, posz, fontColor, color, alpha, useAlpha, roty) {
           
           //Set font
@@ -392,18 +377,18 @@
           });
           
           visFrames.push({
-            frame: 5 * frameRate / 2,
+            frame: 826 * frameRate / 2,
             value: 0,
           });
           
           visFrames.push({
-            frame: 5 * frameRate / 2,
+            frame: 826 * frameRate / 2,
             value: 1,
           });
 
           visibleTog.setKeys(visFrames);
           
-          scene.beginDirectAnimation(plane, [visibleTog], 0, 5 * frameRate / 2, false);
+          scene.beginDirectAnimation(plane, [visibleTog], 0, 827 * frameRate / 2, false);
                                                  
         }
         
@@ -581,7 +566,6 @@
             
           }
 
-          // var W = [44][4];
           var row3 = 44, col = 4; 
           var W = Array(row3).fill().map(() => Array(col));
 
@@ -723,10 +707,6 @@
             
             outKeys[i] = row.replaceAll(',', '');
             
-            // var strOK = outKeys[i];
-            
-            // const frameRate = 10;
-          
             //Set font
             var font_size = 48;
             var font = "bold " + font_size + "px Arial";
@@ -781,20 +761,10 @@
               value: 0,
             });
             
-            /* visFrames.push({
-              frame: (i * 4) * frameRate / 2,
-              value: 0,
-            }); */
-            
             visFrames.push({
               frame: (168 + i) * frameRate / 2,
               value: 0,
             });
-
-            /* visFrames.push({
-              frame: (5 + (i * 4)) * frameRate / 2,
-              value: 0,
-            }); */
             
             visFrames.push({
               frame: (168 + i) * frameRate / 2,
@@ -968,7 +938,7 @@
             // fix the variables for the animations
             
             // get the SBox value
-            /* var letter = SBox[num1][num2];
+            var letter = SBox[num1][num2];
             
             var sboxDynTex = new BABYLON.DynamicTexture("sboxDynTex", {width:DTWidth, height:DTHeight}, scene);
             var ctx = sboxDynTex.getContext();
@@ -1015,27 +985,29 @@
             });
                       
             visFrames.push({
-              frame: ((8 + iSBox) + (i4 * 3)) * frameRate / 2,
+              // ((202 + i6) + (iNibble * 64))
+              // frame: ((202 + iSBox2) + (i4_2 * 3)) * frameRate / 2,
+              frame: ((202 + i4_2) + (iSBox2 * 64)) * frameRate / 2,
               value: 0,
             });
             
             visFrames.push({
-              frame: ((8 + iSBox) + (i4 * 3)) * frameRate / 2,
+              frame: ((202 + i4_2) + (iSBox2 * 64)) * frameRate / 2,
               value: 1,
             });
 
             visFrames.push({
-              frame: ((9 + iSBox) + (i4 * 3)) * frameRate / 2,
+              frame: ((203 + i4_2) + (iSBox2 * 64)) * frameRate / 2,
               value: 1,
             });
 
             visFrames.push({
-              frame: ((9 + iSBox) + (i4 * 3)) * frameRate / 2,
+              frame: ((203 + i4_2) + (iSBox2 * 64)) * frameRate / 2,
               value: 0,
             });
 
             visFrames.push({
-              frame: ((24 + iSBox) + (i4 * 3)) * frameRate / 2,
+              frame: ((266 + i4_2) + (iSBox2 * 64)) * frameRate / 2,
               value: 0,
             });
             
@@ -1047,20 +1019,24 @@
             });
             
             visFrames2.push({
-              frame: ((9 + iSBox) + (i4 * 3)) * frameRate / 2,
+              // frame: ((203 + iSBox2) + (i4_2 * 3)) * frameRate / 2,
+              frame: ((203 + i4_2) + (iSBox2 * 64)) * frameRate / 2,
               value: 0,
             });
 
             visFrames2.push({
-              frame: ((9 + iSBox) + (i4 * 3)) * frameRate / 2,
+              frame: ((203 + i4_2) + (iSBox2 * 64)) * frameRate / 2,
               value: 1
-            }); */
+            });
 
-            // visibleTog.setKeys(visFrames);
-            // visibleTog2.setKeys(visFrames2);
+            visibleTog.setKeys(visFrames);
+            visibleTog2.setKeys(visFrames2);
             
-            // scene.beginDirectAnimation(sboxPlane, [visibleTog], 0, ((24 + iSBox) + (i4 * 3)) * frameRate / 2, false);
-            // scene.beginDirectAnimation(sboxPlane2, [visibleTog2], 0, ((9 + iSBox) + (i4 * 3)) * frameRate / 2, false);
+            scene.beginDirectAnimation(sboxPlane, [visibleTog], 0, ((267 + i4_2) + (iSBox2 * 3)) * frameRate / 2, false);
+            scene.beginDirectAnimation(sboxPlane2, [visibleTog2], 0, ((267 + i4_2) + (iSBox2 * 3)) * frameRate / 2, false);
+            
+            iSBox2++;
+            i4_2++;
             
           }
           
@@ -1127,11 +1103,6 @@
             frame: 0,
             value: 0,
           });
-          
-          /* visFrames.push({
-            frame: (iRCon * 4) * frameRate / 2,
-            value: 0,
-          }); */
 
           visFrames.push({
             frame: (8 + (iRCon * 16)) * frameRate / 2,
@@ -1311,11 +1282,6 @@
               value: 0,
             });
 
-            /* visFrames.push({
-              frame: (16 + (iXOR * 6)) * frameRate / 2,
-              value: 0,
-            }); */
-
             visibleTog.setKeys(visFrames);
             
             scene.beginDirectAnimation(plane, [visibleTog], 0, (12 + (iXOR * 4)) * frameRate / 2, false);
@@ -1323,13 +1289,7 @@
             
             iXOR++;
             
-          } // else {
-          
-            // enter a different style for the AESMixColumn section
-            
-            // iXOR++;
-            
-          // }
+          }
                     
           return wchar7;
               
@@ -1491,9 +1451,6 @@
             for (var i = 0; i < 4; i++) {
             
               for (var j = 0; j < 4; j++) {
-                
-                // show the XorHex from each over the respective matrix from above
-                // Then show the outHex matrix below from the XorHex output
                 
                 outHex[i][j] = XorHex(sHex[i][j], keyHex[i][j]);
                 var data = outHex[i][j];
@@ -1669,7 +1626,7 @@
             
             sXOR++;
           
-          } else if (sXOR < 11) {
+          } else if (sXOR < 10) {
           
             var row = 4, col = 4; 
             var outHex = Array(row).fill().map(() => Array(col));
@@ -1773,22 +1730,22 @@
             });
             
             visFrames_stateXOR.push({
-              frame: (48 + (sXOR2 * 64)) * frameRate / 2,
+              frame: (250 + (sXOR2 * 64)) * frameRate / 2,
               value: 0,
             });
 
             visFrames_stateXOR.push({
-              frame: (48 + (sXOR2 * 64)) * frameRate / 2,
+              frame: (250 + (sXOR2 * 64)) * frameRate / 2,
               value: 1,
             });
 
             visFrames_stateXOR.push({
-              frame: (64 + (sXOR2 * 64)) * frameRate / 2,
+              frame: (266 + (sXOR2 * 64)) * frameRate / 2,
               value: 1,
             });
 
             visFrames_stateXOR.push({
-              frame: (64 + (sXOR2 * 64)) * frameRate / 2,
+              frame: (266 + (sXOR2 * 64)) * frameRate / 2,
               value: 0,
             });
 
@@ -1811,9 +1768,6 @@
             for (var i = 0; i < 4; i++) {
             
               for (var j = 0; j < 4; j++) {
-                
-                // show the XorHex from each over the respective matrix from above
-                // Then show the outHex matrix below from the XorHex output
                 
                 outHex[i][j] = XorHex(sHex[i][j], keyHex[i][j]);
                 var data = outHex[i][j];
@@ -1894,22 +1848,22 @@
                 });
                 
                 visFrames_sMatrixXOR.push({
-                  frame: ((48 + i5) + (sXOR2 * 64)) * frameRate / 2,
+                  frame: ((250 + i5) + (sXOR2 * 64)) * frameRate / 2,
                   value: 0,
                 });
 
                 visFrames_sMatrixXOR.push({
-                  frame: ((48 + i5) + (sXOR2 * 64)) * frameRate / 2,
+                  frame: ((250 + i5) + (sXOR2 * 64)) * frameRate / 2,
                   value: 1,
                 });
 
                 visFrames_sMatrixXOR.push({
-                  frame: (64 + (sXOR2 * 64)) * frameRate / 2,
+                  frame: (266 + (sXOR2 * 64)) * frameRate / 2,
                   value: 1,
                 });
 
                 visFrames_sMatrixXOR.push({
-                  frame: (64 + (sXOR2 * 64)) * frameRate / 2,
+                  frame: (266 + (sXOR2 * 64)) * frameRate / 2,
                   value: 0,
                 });
 
@@ -1925,22 +1879,22 @@
                 });
                 
                 visFrames_sMatrixXOR2.push({
-                  frame: ((48 + i5) + (sXOR2 * 64)) * frameRate / 2,
+                  frame: ((250 + i5) + (sXOR2 * 64)) * frameRate / 2,
                   value: 0,
                 });
 
                 visFrames_sMatrixXOR2.push({
-                  frame: ((48 + i5) + (sXOR2 * 64)) * frameRate / 2,
+                  frame: ((250 + i5) + (sXOR2 * 64)) * frameRate / 2,
                   value: 1,
                 });
 
                 visFrames_sMatrixXOR2.push({
-                  frame: ((49 + i5) + (sXOR2 * 64)) * frameRate / 2,
+                  frame: ((251 + i5) + (sXOR2 * 64)) * frameRate / 2,
                   value: 1,
                 });
 
                 visFrames_sMatrixXOR2.push({
-                  frame: ((49 + i5) + (sXOR2 * 64)) * frameRate / 2,
+                  frame: ((251 + i5) + (sXOR2 * 64)) * frameRate / 2,
                   value: 0,
                 });
                                 
@@ -1958,22 +1912,22 @@
                 });
 
                 visFrames_sMatrixXOR3.push({
-                  frame: (48 + (sXOR2 * 64)) * frameRate / 2,
+                  frame: (250 + (sXOR2 * 64)) * frameRate / 2,
                   value: 0,
                 });
 
                 visFrames_sMatrixXOR3.push({
-                  frame: (48 + (sXOR2 * 64)) * frameRate / 2,
+                  frame: (250 + (sXOR2 * 64)) * frameRate / 2,
                   value: 1,
                 });
 
                 visFrames_sMatrixXOR3.push({
-                  frame: (64 + (sXOR2 * 64)) * frameRate / 2,
+                  frame: (266 + (sXOR2 * 64)) * frameRate / 2,
                   value: 1,
                 });
 
                 visFrames_sMatrixXOR3.push({
-                  frame: (64 + (sXOR2 * 64)) * frameRate / 2,
+                  frame: (266 + (sXOR2 * 64)) * frameRate / 2,
                   value: 0,
                 });
                                 
@@ -1983,6 +1937,7 @@
                 scene.beginDirectAnimation(toMatrixPlaneXOR5, [visibleTog_sMatrixXOR3], 0, (267 + (sXOR2 * 64)) * frameRate / 2, false);
                 
                 i5++;
+                
               }
                 
             }  
@@ -1990,24 +1945,323 @@
             sXOR++;
             sXOR2++;
               
-          } /* else {
+          } else {
           
             var row = 4, col = 4; 
             var outHex = Array(row).fill().map(() => Array(col));
+            
+            const frameRate = 10;
                    
+            //Set font
+            var font_size_stateXOR = 48;
+            var font_stateXOR = "bold " + font_size_stateXOR + "px Arial";
+            
+            var planeHeight_stateXOR = 2;
+                    
+            //Set height for dynamic texture
+            var DTHeight_stateXOR = 1.5 * font_size_stateXOR; //or set as wished
+            
+            //Calcultae ratio
+            var ratioXOR = planeHeight_stateXOR/DTHeight_stateXOR;
+            
+            //Use a temporay dynamic texture to calculate the length of the text on the dynamic texture canvas
+            var temp = new BABYLON.DynamicTexture("DynamicTexture", 64, scene);
+            var tmpctx = temp.getContext();
+            tmpctx.font = font_stateXOR;
+            var DTWidth_stateXOR = tmpctx.measureText("AESStateXOR()").width + 8;
+            var DTWidth_stateXOR2 = tmpctx.measureText("state").width + 8;
+            var DTWidth_stateXOR3 = tmpctx.measureText("keyExp[0]").width + 8;
+            
+            //Calculate width the plane has to be 
+            var planeWidth_stateXOR = DTWidth_stateXOR * ratioXOR;
+            var planeWidth_stateXOR2 = DTWidth_stateXOR2 * ratioXOR;
+            var planeWidth_stateXOR3 = DTWidth_stateXOR3 * ratioXOR;
+            
+            // Dynamic texture setup
+            var stateXORPlaneDynTex = new BABYLON.DynamicTexture("stateXORPlaneDynTex", {width:DTWidth_stateXOR, height:DTHeight_stateXOR}, scene);
+            var stateXORPlaneDynTex2 = new BABYLON.DynamicTexture("stateXORPlaneDynTex2", {width:DTWidth_stateXOR2, height:DTHeight_stateXOR}, scene);
+            var stateXORPlaneDynTex3 = new BABYLON.DynamicTexture("stateXORPlaneDynTex3", {width:DTWidth_stateXOR3, height:DTHeight_stateXOR}, scene);
+            // var ctx = stateXORPlaneDynTex.getContext();
+            
+            var stateXORPlainMat = new BABYLON.StandardMaterial("stateXORPlainMat", scene);
+            stateXORPlainMat.diffuseTexture = stateXORPlaneDynTex;
+            stateXORPlainMat.diffuseTexture.hasAlpha = true;
+            stateXORPlainMat.useAlphaFromDiffuseTexture = true;
+            
+            var stateXORPlainMat2 = new BABYLON.StandardMaterial("stateXORPlainMat2", scene);
+            stateXORPlainMat2.diffuseTexture = stateXORPlaneDynTex2;
+            stateXORPlainMat2.diffuseTexture.hasAlpha = true;
+            stateXORPlainMat2.useAlphaFromDiffuseTexture = true;
+            
+            var stateXORPlainMat3 = new BABYLON.StandardMaterial("stateXORPlainMat3", scene);
+            stateXORPlainMat3.diffuseTexture = stateXORPlaneDynTex3;
+            stateXORPlainMat3.diffuseTexture.hasAlpha = true;
+            stateXORPlainMat3.useAlphaFromDiffuseTexture = true;
+            
+            var stateXORPlane = BABYLON.MeshBuilder.CreatePlane("stateXORPlane", {height: planeHeight_stateXOR, width: planeWidth_stateXOR, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+            stateXORPlane.material = stateXORPlainMat;
+            stateXORPlaneDynTex.drawText("AESStateXOR()", null, null, font_stateXOR, "blue", "transparent", true);
+            
+            var stateXORPlane2 = BABYLON.MeshBuilder.CreatePlane("stateXORPlane2", {height: planeHeight_stateXOR, width: planeWidth_stateXOR2, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+            stateXORPlane2.material = stateXORPlainMat2;
+            stateXORPlaneDynTex2.drawText("state", null, null, font_stateXOR, "blue", "transparent", true);
+            
+            var stateXORPlane3 = BABYLON.MeshBuilder.CreatePlane("stateXORPlane3", {height: planeHeight_stateXOR, width: planeWidth_stateXOR3, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+            stateXORPlane3.material = stateXORPlainMat3;
+            stateXORPlaneDynTex3.drawText("keyExp[0]", null, null, font_stateXOR, "blue", "transparent", true);
+                         
+            stateXORPlainMat.onBindObservable.add(() => {
+              
+              engine.alphaState.setAlphaBlendFunctionParameters(1, 0x0303 /* ONE MINUS SRC ALPHA */, 1, 0x0303 /* ONE MINUS SRC ALPHA */);
+              
+            });   
+            
+            stateXORPlainMat2.onBindObservable.add(() => {
+              
+              engine.alphaState.setAlphaBlendFunctionParameters(1, 0x0303 /* ONE MINUS SRC ALPHA */, 1, 0x0303 /* ONE MINUS SRC ALPHA */);
+              
+            });
+                  
+            stateXORPlainMat3.onBindObservable.add(() => {
+              
+              engine.alphaState.setAlphaBlendFunctionParameters(1, 0x0303 /* ONE MINUS SRC ALPHA */, 1, 0x0303 /* ONE MINUS SRC ALPHA */);
+              
+            });
+
+            // normalPlane("SBox", 2.5, 2.5, 75, 35, 40, 0, -2.75, "blue", "transparent",  "true", "true", Math.PI / 2);
+            stateXORPlane.position = new BABYLON.Vector3(30, -12.75, -3);
+            stateXORPlane.rotation.y = Math.PI / 2;
+            
+            stateXORPlane2.position = new BABYLON.Vector3(30, -25.25, 10);
+            stateXORPlane2.rotation.y = Math.PI / 2;
+            
+            stateXORPlane3.position = new BABYLON.Vector3(30, -25.25, -16);
+            stateXORPlane3.rotation.y = Math.PI / 2;
+            
+            // Animation
+            var visibleTog_stateXOR = new BABYLON.Animation("visibleTog_stateXOR", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+            
+            var visFrames_stateXOR = [];
+        
+            visFrames_stateXOR.push({
+              frame: 0,
+              value: 0,
+            });
+            
+            visFrames_stateXOR.push({
+              frame: 810 * frameRate / 2,
+              value: 0,
+            });
+
+            visFrames_stateXOR.push({
+              frame: 810 * frameRate / 2,
+              value: 1,
+            });
+
+            visFrames_stateXOR.push({
+              frame: 811 * frameRate / 2,
+              value: 1,
+            });
+
+            /* visFrames_stateXOR.push({
+              frame: (640 + (sXOR2 * 64)) * frameRate / 2,
+              value: 0,
+            }); */
+
+            visibleTog_stateXOR.setKeys(visFrames_stateXOR);
+            
+            scene.beginDirectAnimation(stateXORPlane, [visibleTog_stateXOR], 0, 812 * frameRate / 2, false);
+            scene.beginDirectAnimation(stateXORPlane2, [visibleTog_stateXOR], 0, 812 * frameRate / 2, false);
+            scene.beginDirectAnimation(stateXORPlane3, [visibleTog_stateXOR], 0, 812 * frameRate / 2, false);
+            
+            
+            //  initial state Matrix
+            var planeWidth_sMatrixXOR = 2;
+            var planeHeight_sMatrixXOR = 2;
+            
+            var DTWidth_sMatrixXOR = planeWidth_sMatrixXOR * 128;
+            var DTHeight_sMatrixXOR = planeHeight_sMatrixXOR * 128;
+                               
+            var i5 = 0;
+            
             for (var i = 0; i < 4; i++) {
             
               for (var j = 0; j < 4; j++) {
                 
                 outHex[i][j] = XorHex(sHex[i][j], keyHex[i][j]);
-                  
+                var data = outHex[i][j];
+                var data2 = sHex[i][j];
+                var data3 = keyHex[i][j];
+                        
+                var toMatrixDynTexXOR = new BABYLON.DynamicTexture("toMatrixDynTexXOR", {width:DTWidth_sMatrixXOR, height:DTHeight_sMatrixXOR}, scene);
+                var toMatrixDynTexXOR2 = new BABYLON.DynamicTexture("toMatrixDynTexXOR2", {width:DTWidth_sMatrixXOR, height:DTHeight_sMatrixXOR}, scene);
+                var toMatrixDynTexXOR3 = new BABYLON.DynamicTexture("toMatrixDynTexXOR3", {width:DTWidth_sMatrixXOR, height:DTHeight_sMatrixXOR}, scene);
+                var toMatrixDynTexXOR4 = new BABYLON.DynamicTexture("toMatrixDynTexXOR4", {width:DTWidth_sMatrixXOR, height:DTHeight_sMatrixXOR}, scene);
+                var toMatrixDynTexXOR5 = new BABYLON.DynamicTexture("toMatrixDynTexXOR5", {width:DTWidth_sMatrixXOR, height:DTHeight_sMatrixXOR}, scene);
+                var ctxXOR = toMatrixDynTexXOR.getContext();
+                
+                // Font sized to fit the plane
+                var font_type_sMatrixXOR = "Arial";
+                var size_sMatrixXOR = 12;
+                var text_sMatrixXOR = "8D";
+                ctxXOR.font = size_sMatrixXOR + "px " + font_type_sMatrixXOR;
+                var textWidth_sMatrixXOR = ctxXOR.measureText(text_sMatrixXOR).width;
+                
+                var ratio_sMatrixXOR = textWidth_sMatrixXOR/size_sMatrixXOR;
+                
+                var font_size_sMatrixXOR = Math.floor(DTWidth_sMatrixXOR / (ratio_sMatrixXOR * 1));
+                var font_sMatrixXOR = font_size_sMatrixXOR + "px " + font_type_sMatrixXOR;
+                
+                var toMatrixMatXOR = new BABYLON.StandardMaterial("toMatrixMatXOR", scene);                    
+                toMatrixMatXOR.diffuseTexture = toMatrixDynTexXOR;
+                var toMatrixMatXOR2 = new BABYLON.StandardMaterial("toMatrixMatXOR2", scene);                    
+                toMatrixMatXOR2.diffuseTexture = toMatrixDynTexXOR2;
+                var toMatrixMatXOR3 = new BABYLON.StandardMaterial("toMatrixMatXOR3", scene);                    
+                toMatrixMatXOR3.diffuseTexture = toMatrixDynTexXOR3;
+                var toMatrixMatXOR4 = new BABYLON.StandardMaterial("toMatrixMatXOR4", scene);                    
+                toMatrixMatXOR4.diffuseTexture = toMatrixDynTexXOR4;
+                var toMatrixMatXOR5 = new BABYLON.StandardMaterial("toMatrixMatXOR5", scene);                    
+                toMatrixMatXOR5.diffuseTexture = toMatrixDynTexXOR5;
+                
+                var toMatrixPlaneXOR = BABYLON.MeshBuilder.CreatePlane("toMatrixPlaneXOR", {height: planeHeight_sMatrixXOR, width: planeWidth_sMatrixXOR, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+                toMatrixPlaneXOR.material = toMatrixMatXOR;
+                toMatrixDynTexXOR.drawText(data, null, null, font_sMatrixXOR, "blue", "yellow", true);
+                
+                var toMatrixPlaneXOR2 = BABYLON.MeshBuilder.CreatePlane("toMatrixPlaneXOR2", {height: planeHeight_sMatrixXOR, width: planeWidth_sMatrixXOR, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+                toMatrixPlaneXOR2.material = toMatrixMatXOR2;
+                toMatrixDynTexXOR2.drawText(data2, null, null, font_sMatrixXOR, "blue", "yellow", true);
+                
+                var toMatrixPlaneXOR3 = BABYLON.MeshBuilder.CreatePlane("toMatrixPlaneXOR3", {height: planeHeight_sMatrixXOR, width: planeWidth_sMatrixXOR, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+                toMatrixPlaneXOR3.material = toMatrixMatXOR3;
+                toMatrixDynTexXOR3.drawText(data3, null, null, font_sMatrixXOR, "blue", "yellow", true);
+                
+                var toMatrixPlaneXOR4 = BABYLON.MeshBuilder.CreatePlane("toMatrixPlaneXOR4", {height: planeHeight_sMatrixXOR, width: planeWidth_sMatrixXOR, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+                toMatrixPlaneXOR4.material = toMatrixMatXOR4;
+                toMatrixDynTexXOR4.drawText(data2, null, null, font_sMatrixXOR, "blue", "white", true);
+                
+                var toMatrixPlaneXOR5 = BABYLON.MeshBuilder.CreatePlane("toMatrixPlaneXOR5", {height: planeHeight_sMatrixXOR, width: planeWidth_sMatrixXOR, sideOrientation: BABYLON.Mesh.DOUBLESIDE}, scene);
+                toMatrixPlaneXOR5.material = toMatrixMatXOR5;
+                toMatrixDynTexXOR5.drawText(data3, null, null, font_sMatrixXOR, "blue", "white", true);
+                                            
+                toMatrixPlaneXOR.position = new BABYLON.Vector3(28, (i * -2.25) + -15, (j * -2.25) + 1);
+                toMatrixPlaneXOR.rotation.y = Math.PI / 2;
+                toMatrixPlaneXOR2.position = new BABYLON.Vector3(28, (i * -2.25) + -27.5, (j * -2.25) + 13);
+                toMatrixPlaneXOR2.rotation.y = Math.PI / 2;
+                toMatrixPlaneXOR3.position = new BABYLON.Vector3(28, (i * -2.25) + -27.5, (j * -2.25) + -12);
+                toMatrixPlaneXOR3.rotation.y = Math.PI / 2;
+                toMatrixPlaneXOR4.position = new BABYLON.Vector3(30, (i * -2.25) + -27.5, (j * -2.25) + 13);
+                toMatrixPlaneXOR4.rotation.y = Math.PI / 2;
+                toMatrixPlaneXOR5.position = new BABYLON.Vector3(30, (i * -2.25) + -27.5, (j * -2.25) + -12);
+                toMatrixPlaneXOR5.rotation.y = Math.PI / 2;
+                
+                // Animation
+                var visibleTog_sMatrixXOR = new BABYLON.Animation("visibleTog_sMatrixXOR", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                var visibleTog_sMatrixXOR2 = new BABYLON.Animation("visibleTog_sMatrixXOR2", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                var visibleTog_sMatrixXOR3 = new BABYLON.Animation("visibleTog_sMatrixXOR3", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
+                
+                var visFrames_sMatrixXOR = [];
+            
+                visFrames_sMatrixXOR.push({
+                  frame: 0,
+                  value: 0,
+                });
+                
+                visFrames_sMatrixXOR.push({
+                  frame: (810 + i5) * frameRate / 2,
+                  value: 0,
+                });
+
+                visFrames_sMatrixXOR.push({
+                  frame: (810 + i5) * frameRate / 2,
+                  value: 1,
+                });
+
+                visFrames_sMatrixXOR.push({
+                  frame: 811 * frameRate / 2,
+                  value: 1,
+                });
+
+                /* visFrames_sMatrixXOR.push({
+                  frame: (640 + (sXOR2 * 64)) * frameRate / 2,
+                  value: 0,
+                }); */
+
+                visibleTog_sMatrixXOR.setKeys(visFrames_sMatrixXOR);
+                
+                scene.beginDirectAnimation(toMatrixPlaneXOR, [visibleTog_sMatrixXOR], 0, 812 * frameRate / 2, false);
+                
+                var visFrames_sMatrixXOR2 = [];
+            
+                visFrames_sMatrixXOR2.push({
+                  frame: 0,
+                  value: 0,
+                });
+                
+                visFrames_sMatrixXOR2.push({
+                  frame: (810 + i5) * frameRate / 2,
+                  value: 0,
+                });
+
+                visFrames_sMatrixXOR2.push({
+                  frame: (810 + i5) * frameRate / 2,
+                  value: 1,
+                });
+
+                visFrames_sMatrixXOR2.push({
+                  frame: (811 + i5) * frameRate / 2,
+                  value: 1,
+                });
+
+                visFrames_sMatrixXOR2.push({
+                  frame: (811 + i5) * frameRate / 2,
+                  value: 0,
+                });
+                                
+                visibleTog_sMatrixXOR2.setKeys(visFrames_sMatrixXOR2);
+                
+                scene.beginDirectAnimation(toMatrixPlaneXOR2, [visibleTog_sMatrixXOR2], 0, 812 * frameRate / 2, false);
+                scene.beginDirectAnimation(toMatrixPlaneXOR3, [visibleTog_sMatrixXOR2], 0, 812 * frameRate / 2, false);
+                
+                
+                var visFrames_sMatrixXOR3 = [];
+            
+                visFrames_sMatrixXOR3.push({
+                  frame: 0,
+                  value: 0,
+                });
+
+                visFrames_sMatrixXOR3.push({
+                  frame: 810 * frameRate / 2,
+                  value: 0,
+                });
+
+                visFrames_sMatrixXOR3.push({
+                  frame: 810 * frameRate / 2,
+                  value: 1,
+                });
+
+                visFrames_sMatrixXOR3.push({
+                  frame: 811 * frameRate / 2,
+                  value: 1,
+                });
+
+                /* visFrames_sMatrixXOR3.push({
+                  frame: (640 + (sXOR2 * 64)) * frameRate / 2,
+                  value: 0,
+                }); */
+                                
+                visibleTog_sMatrixXOR3.setKeys(visFrames_sMatrixXOR3);
+                
+                scene.beginDirectAnimation(toMatrixPlaneXOR4, [visibleTog_sMatrixXOR3], 0, 812 * frameRate / 2, false);
+                scene.beginDirectAnimation(toMatrixPlaneXOR5, [visibleTog_sMatrixXOR3], 0, 812 * frameRate / 2, false);
+                
+                i5++;
+                
               }
                 
             }  
-            
-            // sXOR++;
-              
-          } */
+                     
+          }
                   
           return outHex;
             
@@ -2088,49 +2342,24 @@
             });
             
             visFrames_state_nibble.push({
-              frame: (1 + (iNibble * 64)) * frameRate / 2,
+              frame: (202 + (iNibble * 64)) * frameRate / 2,
               value: 0,
             });
 
             visFrames_state_nibble.push({
-              frame: (1 + (iNibble * 64)) * frameRate / 2,
+              frame: (202 + (iNibble * 64)) * frameRate / 2,
               value: 1,
             });
 
             visFrames_state_nibble.push({
-              frame: (64 + (iNibble * 64)) * frameRate / 2,
+              frame: (266 + (iNibble * 64)) * frameRate / 2,
               value: 1,
             });
 
             visFrames_state_nibble.push({
-              frame: (64 + (iNibble * 64)) * frameRate / 2,
+              frame: (266 + (iNibble * 64)) * frameRate / 2,
               value: 0,
             });
-            
-            /* visFrames_state_nibble.push({
-              frame: 0,
-              value: 0,
-            });
-            
-            visFrames_state_nibble.push({
-              frame: 202 * frameRate / 2,
-              value: 0,
-            });
-
-            visFrames_state_nibble.push({
-              frame: 202 * frameRate / 2,
-              value: 1,
-            });
-
-            visFrames_state_nibble.push({
-              frame: 266 * frameRate / 2,
-              value: 1,
-            });
-
-            visFrames_state_nibble.push({
-              frame: 266 * frameRate / 2,
-              value: 0,
-            }); */
 
             visibleTog_state_nibble.setKeys(visFrames_state_nibble);
             
@@ -2206,54 +2435,29 @@
                 });
                 
                 visFrames.push({
-                  frame: ((1 + i6) + (iNibble * 64)) * frameRate / 2,
+                  frame: ((202 + i6) + (iNibble * 64)) * frameRate / 2,
                   value: 0,
                 });
 
                 visFrames.push({
-                  frame: ((1 + i6) + (iNibble * 64)) * frameRate / 2,
+                  frame: ((202 + i6) + (iNibble * 64)) * frameRate / 2,
                   value: 1,
                 });
 
                 visFrames.push({
-                  frame: ((2 + i6) + (iNibble * 64)) * frameRate / 2,
+                  frame: ((203 + i6) + (iNibble * 64)) * frameRate / 2,
                   value: 1,
                 });
 
                 visFrames.push({
-                  frame: ((2 + i6) + (iNibble * 64)) * frameRate / 2,
+                  frame: ((203 + i6) + (iNibble * 64)) * frameRate / 2,
                   value: 0,
                 });
 
                 visFrames.push({
-                  frame: (64 + (iNibble * 64)) * frameRate / 2,
+                  frame: (266 + (iNibble * 64)) * frameRate / 2,
                   value: 0,
                 });
-                
-                /* visFrames.push({
-                  frame: 0,
-                  value: 0,
-                });
-                
-                visFrames.push({
-                  frame: (202 + i6) * frameRate / 2,
-                  value: 0,
-                });
-
-                visFrames.push({
-                  frame: (202 + i6) * frameRate / 2,
-                  value: 1,
-                });
-
-                visFrames.push({
-                  frame: 266 * frameRate / 2,
-                  value: 1,
-                });
-
-                visFrames.push({
-                  frame: 266 * frameRate / 2,
-                  value: 0,
-                }); */
                 
                 visibleTog.setKeys(visFrames);
                 
@@ -2267,49 +2471,24 @@
                 });
                 
                 visFrames2.push({
-                  frame: (1 + (iNibble * 64)) * frameRate / 2,
+                  frame: (202 + (iNibble * 64)) * frameRate / 2,
                   value: 0,
                 });
 
                 visFrames2.push({
-                  frame: (1 + (iNibble * 64)) * frameRate / 2,
+                  frame: (202 + (iNibble * 64)) * frameRate / 2,
                   value: 1,
                 });
 
                 visFrames2.push({
-                  frame: (64 + (iNibble * 64)) * frameRate / 2,
+                  frame: (266 + (iNibble * 64)) * frameRate / 2,
                   value: 1,
                 });
 
                 visFrames2.push({
-                  frame: (64 + (iNibble * 64)) * frameRate / 2,
+                  frame: (266 + (iNibble * 64)) * frameRate / 2,
                   value: 0,
                 });
-                
-                /* visFrames2.push({
-                  frame: 0,
-                  value: 0,
-                });
-
-                visFrames2.push({
-                  frame: 202 * frameRate / 2,
-                  value: 0,
-                });
-
-                visFrames2.push({
-                  frame: 202 * frameRate / 2,
-                  value: 1,
-                });
-
-                visFrames2.push({
-                  frame: 266 * frameRate / 2,
-                  value: 1,
-                });
-
-                visFrames2.push({
-                  frame: 266 * frameRate / 2,
-                  value: 0,
-                }); */
                 
                 visibleTog2.setKeys(visFrames2);
                 
@@ -2323,22 +2502,22 @@
                 });
                 
                 visFrames3.push({
-                  frame: ((2 + i6) + (iNibble * 64)) * frameRate / 2,
+                  frame: ((203 + i6) + (iNibble * 64)) * frameRate / 2,
                   value: 0,
                 });
 
                 visFrames3.push({
-                  frame: ((2 + i6) + (iNibble * 64)) * frameRate / 2,
+                  frame: ((203 + i6) + (iNibble * 64)) * frameRate / 2,
                   value: 1,
                 });
 
                 visFrames3.push({
-                  frame: (64 + (iNibble * 64)) * frameRate / 2,
+                  frame: (266 + (iNibble * 64)) * frameRate / 2,
                   value: 1,
                 });
 
                 visFrames3.push({
-                  frame: (64 + (iNibble * 64)) * frameRate / 2,
+                  frame: (266 + (iNibble * 64)) * frameRate / 2,
                   value: 0,
                 });
                 
@@ -2354,24 +2533,7 @@
             
             iNibble++;
             
-          } /* else {
-          
-            var row = 4, col = 4; 
-            var outHex = Array(row).fill().map(() => Array(col));
-                           
-            for (var i = 0; i < 4; i++) {
-              
-              for (var j = 0; j < 4; j++) {
-                
-                outHex[i][j] = aesSBox(inHex[i][j]);
-                                                  
-              }
-                
-            }
-          
-            iNibble++;
-          
-          } */
+          }
                     
           return outHex;
             
@@ -2450,61 +2612,24 @@
             });
             
             visFrames_state_shift.push({
-              frame: (17 + (iShift * 64)) * frameRate / 2,
+              frame: (218 + (iShift * 64)) * frameRate / 2,
               value: 0,
             });
 
             visFrames_state_shift.push({
-              frame: (17 + (iShift * 64)) * frameRate / 2,
+              frame: (218 + (iShift * 64)) * frameRate / 2,
               value: 1,
             });
 
             visFrames_state_shift.push({
-              frame: (64 + (iShift * 64)) * frameRate / 2,
+              frame: (266 + (iShift * 64)) * frameRate / 2,
               value: 1,
             });
 
             visFrames_state_shift.push({
-              frame: (64 + (iShift * 64)) * frameRate / 2,
+              frame: (266 + (iShift * 64)) * frameRate / 2,
               value: 0,
             });
-            
-            /* visFrames_state_shift.push({
-              frame: 0,
-              value: 0,
-            });
-            
-            
-            visFrames_state_shift.push({
-              frame: 218 * frameRate / 2,
-              value: 0,
-            });
-            
-            
-            visFrames_state_shift.push({
-              frame: 218 * frameRate / 2,
-              value: 1,
-            }); */
-            
-            /* visFrames_state_shift.push({
-              frame: 219 * frameRate / 2,
-              value: 0,
-            }); */
-
-            /* visFrames_state_shift.push({
-              frame: 219 * frameRate / 2,
-              value: 1,
-            });
-
-            visFrames_state_shift.push({
-              frame: 266 * frameRate / 2,
-              value: 1,
-            });
-
-            visFrames_state_shift.push({
-              frame: 266 * frameRate / 2,
-              value: 0,
-            }); */
 
             visibleTog_state_shift.setKeys(visFrames_state_shift);
             
@@ -2515,8 +2640,6 @@
             
             var DTWidth = planeWidth * 128;
             var DTHeight = planeHeight * 128;
-            
-            // var i6 = 0;
             
             var num = 0;
             var num2 = 17;
@@ -2590,23 +2713,22 @@
                 });
                 
                 visFrames.push({
-                  frame: (num + ((17 + (iShift * 64)))) * frameRate / 2,
+                  frame: (num + ((218 + (iShift * 64)))) * frameRate / 2,
                   value: 0,
                 });
                 
                 visFrames.push({
-                  frame: (num + ((17 + (iShift * 64)))) * frameRate / 2,
+                  frame: (num + ((218 + (iShift * 64)))) * frameRate / 2,
                   value: 1,
                 });
 
                 visFrames.push({
-                  frame: (64 + (iShift * 64)) * frameRate / 2,
+                  frame: (266 + (iShift * 64)) * frameRate / 2,
                   value: 1,
                 });
 
                 visFrames.push({
-                  // frame: (num + ((num2 + 16 + (iShift * 64)))) * frameRate / 2,
-                  frame: (64 + (iShift * 64)) * frameRate / 2,
+                  frame: (266 + (iShift * 64)) * frameRate / 2,
                   value: 0,
                 });
 
@@ -2622,55 +2744,24 @@
                 });
                 
                 visFrames2.push({
-                  frame: (17 + (iShift * 64)) * frameRate / 2,
+                  frame: (218 + (iShift * 64)) * frameRate / 2,
                   value: 0,
                 });
 
                 visFrames2.push({
-                  frame: (17 + (iShift * 64)) * frameRate / 2,
+                  frame: (218 + (iShift * 64)) * frameRate / 2,
                   value: 1,
                 });
 
                 visFrames2.push({
-                  frame: (64 + (iShift * 64)) * frameRate / 2,
+                  frame: (266 + (iShift * 64)) * frameRate / 2,
                   value: 1,
                 });
 
                 visFrames2.push({
-                  frame: (64 + (iShift * 64)) * frameRate / 2,
+                  frame: (266 + (iShift * 64)) * frameRate / 2,
                   value: 0,
                 });
-                
-                /* visFrames2.push({
-                  frame: 0,
-                  value: 0,
-                });
-                        
-                visFrames2.push({
-                  frame: 218 * frameRate / 2,
-                  value: 0,
-                });
-                
-                
-                visFrames2.push({
-                  frame: 218 * frameRate / 2,
-                  value: 1,
-                });
-
-               visFrames2.push({
-                  frame: 219 * frameRate / 2,
-                  value: 1,
-                });
-
-                visFrames2.push({
-                  frame: 266 * frameRate / 2,
-                  value: 1,
-                });
-
-                visFrames2.push({
-                  frame: 266 * frameRate / 2,
-                  value: 0,
-                }); */
                 
                 visibleTog2.setKeys(visFrames2);
                 
@@ -2685,28 +2776,10 @@
             
             iShift++;
             
-          } /* else {
-          
-            var row = 4, col = 4; 
-            var outHex = Array(row).fill().map(() => Array(col));
-            
-            for (var i = 0; i < 4; i++) {
-              
-              for (var j = 0; j < 4; j++) {
-                
-                outHex[i][j] = inStateHex[(i + j) % 4][j];
-                
-              }
-                
-            }
-            
-            iShift++;
-          
-          } */
+          }
           
           return outHex;
-          
-            
+                      
         }
         
         /*
@@ -2882,37 +2955,10 @@
             });
             
             visFrames_state_mix.push({
-              frame: (33 + (iMix * 64)) * frameRate / 2,
+              frame: (234 + (iMix * 64)) * frameRate / 2,
               value: 0,
             });
 
-            visFrames_state_mix.push({
-              frame: (33 + (iMix * 64)) * frameRate / 2,
-              value: 1,
-            });
-
-            visFrames_state_mix.push({
-              frame: (64 + (iMix * 64)) * frameRate / 2,
-              value: 1,
-            });
-
-            visFrames_state_mix.push({
-              frame: (64 + (iMix * 64)) * frameRate / 2,
-              value: 0,
-            });
-            
-            /* visFrames_state_mix.push({
-              frame: 0,
-              value: 0,
-            });
-            
-            
-            visFrames_state_mix.push({
-              frame: (234 + (iMix * 64))* frameRate / 2,
-              value: 0,
-            });
-            
-            
             visFrames_state_mix.push({
               frame: (234 + (iMix * 64)) * frameRate / 2,
               value: 1,
@@ -2926,7 +2972,7 @@
             visFrames_state_mix.push({
               frame: (266 + (iMix * 64)) * frameRate / 2,
               value: 0,
-            }); */
+            });
 
             visibleTog_state_mix.setKeys(visFrames_state_mix);
             
@@ -2981,56 +3027,25 @@
                 });
                 
                 visFrames.push({
-                  frame: (33 + (iMix * 64)) * frameRate / 2,
+                  frame: (234 + (iMix * 64)) * frameRate / 2,
                   value: 0,
                 });
 
                 visFrames.push({
-                  frame: (33 + (iMix * 64)) * frameRate / 2,
+                  frame: (234 + (iMix * 64)) * frameRate / 2,
                   value: 1,
                 });
 
                 visFrames.push({
-                  frame: (64 + (iMix * 64)) * frameRate / 2,
+                  frame: (266 + (iMix * 64)) * frameRate / 2,
                   value: 1,
                 });
 
                 visFrames.push({
-                  frame: (64 + (iMix * 64)) * frameRate / 2,
+                  frame: (266 + (iMix * 64)) * frameRate / 2,
                   value: 0,
                 });
-                
-                /* visFrames.push({
-                  frame: 0,
-                  value: 0,
-                });
-                        
-                visFrames.push({
-                  frame: 234 * frameRate / 2,
-                  value: 0,
-                });
-                
-                
-                visFrames.push({
-                  frame: 234 * frameRate / 2,
-                  value: 1,
-                });
-
-               visFrames.push({
-                  frame: 234 * frameRate / 2,
-                  value: 1,
-                });
-
-                visFrames.push({
-                  frame: 266 * frameRate / 2,
-                  value: 1,
-                });
-
-                visFrames.push({
-                  frame: 266 * frameRate / 2,
-                  value: 0,
-                }); */
-                
+                                
                 visibleTog.setKeys(visFrames);
                 
                 scene.beginDirectAnimation(outHexPlane, [visibleTog], 0, (267 + (iMix * 64)) * frameRate / 2, false);
@@ -3152,27 +3167,27 @@
               });
               
               mixVisFrames.push({
-                frame: (33 + (iMix * 64)) * frameRate / 2,
+                frame: (234 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
 
               mixVisFrames.push({
-                frame: (33 + (iMix * 64)) * frameRate / 2,
+                frame: (234 + (iMix * 64)) * frameRate / 2,
                 value: 1,
               });
               
               mixVisFrames.push({
-                frame: (34 + (iMix * 64)) * frameRate / 2,
+                frame: (235 + (iMix * 64)) * frameRate / 2,
                 value: 1,
               });
 
               mixVisFrames.push({
-                frame: (34 + (iMix * 64)) * frameRate / 2,
+                frame: (235 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
 
               mixVisFrames.push({
-                frame: (64 + (iMix * 64)) * frameRate / 2,
+                frame: (266 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
               
@@ -3188,27 +3203,27 @@
               });
               
               mixVisFrames2.push({
-                frame: (37 + (iMix * 64)) * frameRate / 2,
+                frame: (238 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
 
               mixVisFrames2.push({
-                frame: (37 + (iMix * 64)) * frameRate / 2,
+                frame: (238 + (iMix * 64)) * frameRate / 2,
                 value: 1,
               });
               
               mixVisFrames2.push({
-                frame: (38 + (iMix * 64)) * frameRate / 2,
+                frame: (239 + (iMix * 64)) * frameRate / 2,
                 value: 1,
               });
 
               mixVisFrames2.push({
-                frame: (38 + (iMix * 64)) * frameRate / 2,
+                frame: (239 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
 
               mixVisFrames2.push({
-                frame: (64 + (iMix * 64)) * frameRate / 2,
+                frame: (266 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
               
@@ -3224,27 +3239,27 @@
               });
               
               mixVisFrames3.push({
-                frame: (41 + (iMix * 64)) * frameRate / 2,
+                frame: (242 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
 
               mixVisFrames3.push({
-                frame: (41 + (iMix * 64)) * frameRate / 2,
+                frame: (242 + (iMix * 64)) * frameRate / 2,
                 value: 1,
               });
               
               mixVisFrames3.push({
-                frame: (42 + (iMix * 64)) * frameRate / 2,
+                frame: (243 + (iMix * 64)) * frameRate / 2,
                 value: 1,
               });
 
               mixVisFrames3.push({
-                frame: (42 + (iMix * 64)) * frameRate / 2,
+                frame: (243 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
 
               mixVisFrames3.push({
-                frame: (64 + (iMix * 64)) * frameRate / 2,
+                frame: (266 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
               
@@ -3260,27 +3275,27 @@
               });
               
               mixVisFrames4.push({
-                frame: (45 + (iMix * 64)) * frameRate / 2,
+                frame: (246 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
 
               mixVisFrames4.push({
-                frame: (45 + (iMix * 64)) * frameRate / 2,
+                frame: (246 + (iMix * 64)) * frameRate / 2,
                 value: 1,
               });
               
               mixVisFrames4.push({
-                frame: (46 + (iMix * 64)) * frameRate / 2,
+                frame: (247 + (iMix * 64)) * frameRate / 2,
                 value: 1,
               });
 
               mixVisFrames4.push({
-                frame: (46 + (iMix * 64)) * frameRate / 2,
+                frame: (247 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
 
               mixVisFrames4.push({
-                frame: (64 + (iMix * 64)) * frameRate / 2,
+                frame: (266 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
               
@@ -3296,22 +3311,22 @@
               });
               
               mixVisFrames5.push({
-                frame: (34 + (iMix * 64)) * frameRate / 2,
+                frame: (235 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
 
               mixVisFrames5.push({
-                frame: (34 + (iMix * 64)) * frameRate / 2,
+                frame: (235 + (iMix * 64)) * frameRate / 2,
                 value: 1,
               });
 
               mixVisFrames5.push({
-                frame: (64 + (iMix * 64)) * frameRate / 2,
+                frame: (266 + (iMix * 64)) * frameRate / 2,
                 value: 1,
               });
 
               mixVisFrames5.push({
-                frame: (64 + (iMix * 64)) * frameRate / 2,
+                frame: (266 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
               
@@ -3327,22 +3342,22 @@
               });
               
               mixVisFrames6.push({
-                frame: (38 + (iMix * 64)) * frameRate / 2,
+                frame: (239 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
 
               mixVisFrames6.push({
-                frame: (38 + (iMix * 64)) * frameRate / 2,
+                frame: (239 + (iMix * 64)) * frameRate / 2,
                 value: 1,
               });
               
               mixVisFrames6.push({
-                frame: (64 + (iMix * 64)) * frameRate / 2,
+                frame: (266 + (iMix * 64)) * frameRate / 2,
                 value: 1,
               });
 
               mixVisFrames6.push({
-                frame: (64 + (iMix * 64)) * frameRate / 2,
+                frame: (266 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
               
@@ -3358,22 +3373,22 @@
               });
               
               mixVisFrames7.push({
-                frame: (42 + (iMix * 64)) * frameRate / 2,
+                frame: (243 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
 
               mixVisFrames7.push({
-                frame: (42 + (iMix * 64)) * frameRate / 2,
+                frame: (243 + (iMix * 64)) * frameRate / 2,
                 value: 1,
               });
               
               mixVisFrames7.push({
-                frame: (64 + (iMix * 64)) * frameRate / 2,
+                frame: (266 + (iMix * 64)) * frameRate / 2,
                 value: 1,
               });
 
               mixVisFrames7.push({
-                frame: (64 + (iMix * 64)) * frameRate / 2,
+                frame: (266 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
               
@@ -3389,22 +3404,22 @@
               });
               
               mixVisFrames8.push({
-                frame: (46 + (iMix * 64)) * frameRate / 2,
+                frame: (247 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
 
               mixVisFrames8.push({
-                frame: (46 + (iMix * 64)) * frameRate / 2,
+                frame: (247 + (iMix * 64)) * frameRate / 2,
                 value: 1,
               });
               
               mixVisFrames8.push({
-                frame: (64 + (iMix * 64)) * frameRate / 2,
+                frame: (266 + (iMix * 64)) * frameRate / 2,
                 value: 1,
               });
 
               mixVisFrames8.push({
-                frame: (64 + (iMix * 64)) * frameRate / 2,
+                frame: (266 + (iMix * 64)) * frameRate / 2,
                 value: 0,
               });
               
@@ -3416,22 +3431,6 @@
             
             iMix++;
                         
-          } else {
-          
-            var row = 4, col = 4; 
-            var out = Array(row).fill().map(() => Array(col));
-            
-            for (var i = 0; i < 4; i++) {
-              
-              out[i][0] = XorHex(GMul("02", inStateHex[i][0]), GMul("03", inStateHex[i][1]), inStateHex[i][2], inStateHex[i][3]);
-              out[i][1] = XorHex(inStateHex[i][0], GMul("02", inStateHex[i][1]), GMul("03", inStateHex[i][2]), inStateHex[i][3]);
-              out[i][2] = XorHex(inStateHex[i][0], inStateHex[i][1], GMul("02", inStateHex[i][2]), GMul("03", inStateHex[i][3]));
-              out[i][3] = XorHex(GMul("03", inStateHex[i][0]), inStateHex[i][1], inStateHex[i][2], GMul("02", inStateHex[i][3]));
-                
-            }
-          
-            iMix++;
-            
           }
 
           return out;
@@ -3500,7 +3499,6 @@
             
           });
 
-          // normalPlane("SBox", 2.5, 2.5, 75, 35, 40, 0, -2.75, "blue", "transparent",  "true", "true", Math.PI / 2);
           statePlane.position = new BABYLON.Vector3(30, 0, 0);
           statePlane.rotation.y = Math.PI / 2;
           
@@ -3626,7 +3624,6 @@
                                       
           }
 
-          // need these last 3!
           state = AESNibbleSub(state);
           state = AESShiftRow(state);
           state = AESStateXOR(state, toMatrix(keyExp[keyExp.length - 1]));

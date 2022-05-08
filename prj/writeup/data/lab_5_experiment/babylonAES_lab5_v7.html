@@ -1,11 +1,11 @@
 <!--  BabylonAES
 
       * Software: MSCS 630L Semester Project
-      * Filename: babylonAES_lab5_v6.php
+      * Filename: babylonAES_lab5_v7.php
       * Author: Kerry Lyon
-      * Created: May 4, 2022
+      * Created: May 8, 2022
 
-      * Finishing touches on AES encryption animation.
+      * Final full animation of 128 bit AES encryption.
 
 -->
 
@@ -77,12 +77,7 @@
         const key = "5468617473206D79204B756E67204675";
         const plaintext = "54776F204F6E65204E696E652054776F";
         // ciphertext = 29C3505F571420F6402299B31A02D73A;
-        
-        // Sample Input 2
-        // const key = "44722E205061626C6F2052697661732E";
-        // const plaintext = "61697368776172796120706167616C61";
-        // ciphertext = 94E4929435E2D32FBC2B6D58A24AA416
-        
+                
         console.log("key: " + key);
         console.log("plaintext: " + plaintext);
                 
@@ -658,8 +653,6 @@
                 
               }
               
-              
-              
               var Wnew = [];
               Wnew = [          
                 XorHex(rcon, aesSBox(wchar2)),
@@ -934,9 +927,6 @@
             
           } else {
           
-            // enter a different style for the AESNibbleSub section
-            // fix the variables for the animations
-                        
             // get the SBox value
             var letter = SBox[num1][num2];
             
@@ -977,7 +967,6 @@
             var visibleTog = new BABYLON.Animation("visibleTog", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
             var visibleTog2 = new BABYLON.Animation("visibleTog2", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
             
-            // definitely not working yet
             var visFrames = [];
             
             visFrames.push({
@@ -986,34 +975,27 @@
             });
                       
             visFrames.push({
-              // ((202 + i6) + (iNibble * 64))
-              // frame: ((202 + iSBox2) + (i4_2 * 3)) * frameRate / 2,
               frame: ((202 + i4_2) + (iSBox2 * 48)) * frameRate / 2,
-              // frame: (202 + i4_2) * frameRate / 2,
               value: 0,
             });
             
             visFrames.push({
               frame: ((202 + i4_2) + (iSBox2 * 48)) * frameRate / 2,
-              // frame: (202 + i4_2) * frameRate / 2,
               value: 1,
             });
 
             visFrames.push({
               frame: ((203 + i4_2) + (iSBox2 * 48)) * frameRate / 2,
-              // frame: (203 + i4_2) * frameRate / 2,
               value: 1,
             });
 
             visFrames.push({
-              frame: ((203 + i4_2) + (iSBox2 * 48)) * frameRate / 2,              
-              // frame: (203 + i4_2) * frameRate / 2,
+              frame: ((203 + i4_2) + (iSBox2 * 48)) * frameRate / 2, 
               value: 0,
             });
 
             visFrames.push({
               frame: ((266 + i4_2) + (iSBox2 * 48)) * frameRate / 2,
-              // frame: (266 + i4_2) * frameRate / 2,
               value: 0,
             });
             
@@ -1025,15 +1007,12 @@
             });
             
             visFrames2.push({
-              // frame: ((203 + iSBox2) + (i4_2 * 3)) * frameRate / 2,
               frame: ((203 + i4_2) + (iSBox2 * 48)) * frameRate / 2,
-              // frame: (203 + i4_2) * frameRate / 2,
               value: 0,
             });
 
             visFrames2.push({
               frame: ((203 + i4_2) + (iSBox2 * 48)) * frameRate / 2,
-              // frame: (203 + i4_2) * frameRate / 2,
               value: 1
             });
 
@@ -1043,7 +1022,6 @@
             scene.beginDirectAnimation(sboxPlane, [visibleTog], 0, ((267 + i4_2) + (iSBox2 * 48)) * frameRate / 2, false);
             scene.beginDirectAnimation(sboxPlane2, [visibleTog2], 0, ((267 + i4_2) + (iSBox2 * 48)) * frameRate / 2, false);
             
-            // iSBox2++;
             i4_2++;
             
           }
@@ -1164,16 +1142,6 @@
             frame: (12 + (iRCon * 16)) * frameRate / 2,
             value: 1,
           });
-
-          /* visFrames2.push({
-            frame: (12 + (iRCon * 16)) * frameRate / 2,
-            value: 1,
-          });
-
-          visFrames2.push({
-            frame: (12 + (iRCon * 16)) * frameRate / 2,
-            value: 0,
-          }); */
 
           visFrames2.push({
             frame: (24 + (iRCon * 16)) * frameRate / 2,
@@ -1444,7 +1412,6 @@
               
             });
 
-            // normalPlane("SBox", 2.5, 2.5, 75, 35, 40, 0, -2.75, "blue", "transparent",  "true", "true", Math.PI / 2);
             stateXORPlane.position = new BABYLON.Vector3(30, -12.5, 2);
             stateXORPlane.rotation.y = Math.PI / 2;
             
@@ -1489,8 +1456,7 @@
             scene.beginDirectAnimation(stateXORPlane, [visibleTog_stateXOR], 0, 202 * frameRate / 2, false);
             scene.beginDirectAnimation(stateXORPlane2, [visibleTog_stateXOR], 0, 202 * frameRate / 2, false);
             scene.beginDirectAnimation(stateXORPlane3, [visibleTog_stateXOR], 0, 202 * frameRate / 2, false);
-            
-            
+                        
             //  initial state Matrix
             var planeWidth_sMatrixXOR = 2;
             var planeHeight_sMatrixXOR = 2;
@@ -1761,7 +1727,6 @@
               
             });
 
-            // normalPlane("SBox", 2.5, 2.5, 75, 35, 40, 0, -2.75, "blue", "transparent",  "true", "true", Math.PI / 2);
             stateXORPlane.position = new BABYLON.Vector3(30, -12.75, -3);
             stateXORPlane.rotation.y = Math.PI / 2;
             
@@ -1806,8 +1771,7 @@
             scene.beginDirectAnimation(stateXORPlane, [visibleTog_stateXOR], 0, (267 + (sXOR2 * 64)) * frameRate / 2, false);
             scene.beginDirectAnimation(stateXORPlane2, [visibleTog_stateXOR], 0, (267 + (sXOR2 * 64)) * frameRate / 2, false);
             scene.beginDirectAnimation(stateXORPlane3, [visibleTog_stateXOR], 0, (267 + (sXOR2 * 64)) * frameRate / 2, false);
-            
-            
+                        
             //  initial state Matrix
             var planeWidth_sMatrixXOR = 2;
             var planeHeight_sMatrixXOR = 2;
@@ -2033,7 +1997,6 @@
             var stateXORPlaneDynTex = new BABYLON.DynamicTexture("stateXORPlaneDynTex", {width:DTWidth_stateXOR, height:DTHeight_stateXOR}, scene);
             var stateXORPlaneDynTex2 = new BABYLON.DynamicTexture("stateXORPlaneDynTex2", {width:DTWidth_stateXOR2, height:DTHeight_stateXOR}, scene);
             var stateXORPlaneDynTex3 = new BABYLON.DynamicTexture("stateXORPlaneDynTex3", {width:DTWidth_stateXOR3, height:DTHeight_stateXOR}, scene);
-            // var ctx = stateXORPlaneDynTex.getContext();
             
             var stateXORPlainMat = new BABYLON.StandardMaterial("stateXORPlainMat", scene);
             stateXORPlainMat.diffuseTexture = stateXORPlaneDynTex;
@@ -2080,7 +2043,6 @@
               
             });
 
-            // normalPlane("SBox", 2.5, 2.5, 75, 35, 40, 0, -2.75, "blue", "transparent",  "true", "true", Math.PI / 2);
             stateXORPlane.position = new BABYLON.Vector3(30, -12.75, -3);
             stateXORPlane.rotation.y = Math.PI / 2;
             
@@ -2125,8 +2087,7 @@
             scene.beginDirectAnimation(stateXORPlane, [visibleTog_stateXOR], 0, 842 * frameRate / 2, false);
             scene.beginDirectAnimation(stateXORPlane2, [visibleTog_stateXOR], 0, 842 * frameRate / 2, false);
             scene.beginDirectAnimation(stateXORPlane3, [visibleTog_stateXOR], 0, 842 * frameRate / 2, false);
-            
-            
+                        
             //  initial state Matrix
             var planeWidth_sMatrixXOR = 2;
             var planeHeight_sMatrixXOR = 2;
@@ -2210,10 +2171,6 @@
                 var visibleTog_sMatrixXOR = new BABYLON.Animation("visibleTog_sMatrixXOR", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
                 var visibleTog_sMatrixXOR2 = new BABYLON.Animation("visibleTog_sMatrixXOR2", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
                 var visibleTog_sMatrixXOR3 = new BABYLON.Animation("visibleTog_sMatrixXOR3", "visibility", frameRate, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-                
-                // Animations are off
-                // planes appear all at once
-                // timing seems correct though
                 
                 var visFrames_sMatrixXOR = [];
             
@@ -3543,7 +3500,6 @@
           
           // Dynamic texture setup
           var statePlaneDynTex = new BABYLON.DynamicTexture("statePlaneDynTex", {width:DTWidth_state, height:DTHeight_state}, scene);
-          // var ctx = statePlaneDynTex.getContext();
           
           var statePlainMat = new BABYLON.StandardMaterial("statePlainMat", scene);
           statePlainMat.diffuseTexture = statePlaneDynTex;
@@ -3677,7 +3633,6 @@
           
           for (var i = 1; i < 10; i++) {
             
-            // get aesSBox insync with AESNibbleSub
             state = AESNibbleSub(state);
             iSBox2++;
             state = AESShiftRow(state);            

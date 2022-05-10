@@ -8,6 +8,7 @@ prj/info
 unit_tests/
 midterm/
 final/
+presentation/presentation_files/
 
 # Compiled class file
 *.class
